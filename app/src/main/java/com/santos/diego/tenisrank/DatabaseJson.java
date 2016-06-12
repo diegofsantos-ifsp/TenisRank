@@ -209,20 +209,61 @@ public class DatabaseJson {
     // Se type-=2 retorna todos os jogos
     public ArrayList<Desafio> getJogosByTenista(int type, int idTen)
     {
-        ArrayList<Desafio> desafios = null;
+        ArrayList<Desafio> desafiosArray = null;
+        JSONArray desafiosJson = null;
 
         HashMap<String,String> params = new HashMap<String,String>();
 
 
-        if (type==1)
-            params.put("idUsuarios", Integer.toString(idTen));
+        if (type==0) {
+            params.put("PORJOGAR", "1");
+            params.put("idTenistas",Integer.toString(idTen));
+        }
+        else if (type==1) {
+            params.put("PORJOGAR", "0");
+            params.put("idTenistas",Integer.toString(idTen));
+
+        }
         else if (type==2)
-            params.put("idTenista", Integer.toString(idTen));
-        else if (type==3)
-            params.put("idCategoria",Integer.toString(idTen));
+            params.put("idTenistas",Integer.toString(idTen));
+
+        try {
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaJogoByTenista.php", "GET", params);
+
+            if (json == null)
+                return null;
+
+            if (json.getInt("result")==1) {
+                desafiosJson = json.getJSONArray("desafios");
+                desafiosArray = new ArrayList<Desafio>();
+
+                for (int i=0; i< desafiosJson.length(); i++)
+                {
+                    JSONObject u = desafiosJson.getJSONObject(i);
+
+                    Tenista temp = new Tenista();
+                    Usuario user = new Usuario();
+                    Desafio des = new Desafio();
+
+                    temp.setIdTenista(u.getInt("idTenistas"));
+                    temp.setIdUsuario(u.getInt("idUsuarios"));
+                    temp.setCategoria(u.getInt("Categoria"));
+                    temp.setPosicaoAtualRanking(u.getInt("PosicaoAtualRanking"));
+                    user.setNome(u.getString("Nome"));
+                    user.setEndereco(u.getString("Endereco"));
+                    user.setTelefone(u.getString("Telefone"));
+                    user.setEmail(u.getString("Email"));
+                    user.setNomeusuario(u.getString("NomeUsuario"));
+                    temp.setUsuario(user);
+
+                    desafiosArray.add(des);
+                }
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); }
 
 
-        return desafios;
+        return desafiosArray;
     }
 
 

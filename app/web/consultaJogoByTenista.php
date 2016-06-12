@@ -1,8 +1,9 @@
 <?php 
 
-$conn = mysqli_connect("localhost","root","","tenis") or die ("Erro" . mysqli_error($conn));
+include 'connect.php';
 
-
+if (isset($_GET['GETDADOSTENISTAS']))
+	$getdadostenistas = $_GET['GETDADOSTENISTAS'];
 
 //retorna se o tenista possui algum jogo marcado. Se PORJOGAR =1 então somente jogos não jogados ainda. Se =0, todos os jogos jogados
 //menos os que estão por serem jogados
@@ -26,14 +27,14 @@ else
 	$sql = "select * from Desafio";
 	
 
-
+	
 $res = mysqli_query($conn,$sql) or die ("Erro na consulta" .mysqli_error($conn));
 
 
 if (mysqli_num_rows($res) > 0)
 {
 
-	$result["tenistas"]=array();
+	$result["desafios"]=array();
 
 
 /*

@@ -381,6 +381,7 @@ public class MainActivity extends AppCompatActivity
     private class TenistasRankingAsyncTask extends AsyncTask<Void, Integer,ArrayList<Tenista> > {
 
         private ArrayList<Tenista> temp = null;
+        private ArrayList<Desafio> tempDesafio = null;
        // private DatabaseJson json = null;
         private RankingHistorico rank_temp;
 
@@ -403,6 +404,7 @@ public class MainActivity extends AppCompatActivity
                 //ArrayList<Usuario> users = json.getUsersByEmail(mEmail);
                 temp = json.getTenistasByRankingID(rank_temp.getIdRanking());
 
+            //atualiza a posição atual no ranking do usuário
                 if (temp!=null) {
                     for (int x = 0; x < temp.size(); x++)
                         if (temp.get(x).getUsuario().getEmail().compareToIgnoreCase(email) == 0) {
@@ -412,6 +414,14 @@ public class MainActivity extends AppCompatActivity
 
                         }
                 }
+
+            //verifica (de acordo com as regras) os jogadores acima do jogador atual que possui jogos marcados
+            //e, portanto, não poderá aceitar desafios
+
+
+
+
+
                 //publishProgress(60);
                 //Thread.sleep(1000);
 

@@ -1,6 +1,6 @@
 <?php 
 
-$conn = mysqli_connect("localhost","root","","tenis") or die ("Erro" . mysqli_error($conn));
+include 'connect.php';
 
 
 //pega os dados de todos os tenistas de um determinado ranking... inclusindo nome usuário, endereço, telefone, etc...
