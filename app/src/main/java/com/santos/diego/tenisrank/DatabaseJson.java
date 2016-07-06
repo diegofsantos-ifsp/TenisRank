@@ -53,7 +53,7 @@ public class DatabaseJson {
 
             //params.put("Email","diegofsantos@gmail.com");
 
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaUsuario.php", "POST", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
             if (json != null)
             if (json.getInt("result")==1) {
                 usuariosJson = json.getJSONArray("usuarios");
@@ -92,7 +92,7 @@ public class DatabaseJson {
         try {
             params.put("Nome","Diego");
 
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaUsuario.php", "POST", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
 
             if (json.getInt("result")==1) {
                 usuariosJson = json.getJSONArray("usuarios");
@@ -129,7 +129,7 @@ public class DatabaseJson {
 
         Log.v("JSON","ANTES");
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaUsuario.php", "POST", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
 
             if (json == null)
                 return null;
@@ -170,7 +170,7 @@ public class DatabaseJson {
 
         Log.v("JSON","ANTES");
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaUsuario.php", "POST", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
 
             if (json == null)
                 return null;
@@ -207,7 +207,8 @@ public class DatabaseJson {
     // Se type=0 retorna os próximos jogos
     // Se type=1 retorna os jogos passados
     // Se type-=2 retorna todos os jogos
-    public ArrayList<Desafio> getJogosByTenista(int type, int idTen)
+    // Se tenistaDesc = 1 (retorna a descrição dos tenistas)
+    public ArrayList<Desafio> getJogosByTenista(int type, int idTen, int tenistaDesc)
     {
         ArrayList<Desafio> desafiosArray = null;
         JSONArray desafiosJson = null;
@@ -228,7 +229,7 @@ public class DatabaseJson {
             params.put("idTenistas",Integer.toString(idTen));
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaJogoByTenista.php", "GET", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaJogoByTenista.php", "GET", params);
 
             if (json == null)
                 return null;
@@ -240,21 +241,65 @@ public class DatabaseJson {
                 for (int i=0; i< desafiosJson.length(); i++)
                 {
                     JSONObject u = desafiosJson.getJSONObject(i);
-
-                    Tenista temp = new Tenista();
-                    Usuario user = new Usuario();
                     Desafio des = new Desafio();
 
-                    temp.setIdTenista(u.getInt("idTenistas"));
-                    temp.setIdUsuario(u.getInt("idUsuarios"));
-                    temp.setCategoria(u.getInt("Categoria"));
-                    temp.setPosicaoAtualRanking(u.getInt("PosicaoAtualRanking"));
-                    user.setNome(u.getString("Nome"));
-                    user.setEndereco(u.getString("Endereco"));
-                    user.setTelefone(u.getString("Telefone"));
-                    user.setEmail(u.getString("Email"));
-                    user.setNomeusuario(u.getString("NomeUsuario"));
-                    temp.setUsuario(user);
+                    des.setIdDesafio(u.getInt("idDesafios"));
+                    des.setIdTenistaDesafiador(u.getInt("TenistaDesafiador_idTenistas"));
+                    Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
+                    des.setIdTenistaDesafiado(u.getInt("TenistaDesafiado"));
+                    Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
+                    des.setIdQuadra(u.getInt("Quadra_idQuadra"));
+                    des.setData(u.getString("Data"));
+                    des.setHora(u.getString("Hora"));
+                    des.setJogado(u.getInt("Jogado"));
+                    des.setAceitoDesafiado(u.getInt("AceitoDesafiado"));
+                    des.setAceitoDesafiador(u.getInt("AceitoDesafiador"));
+                    des.setResultTenistaDesafiado1((short) u.getInt("ResultTenistaDesafiado1"));
+                    des.setResultTenistaDesafiado2((short) u.getInt("ResultTenistaDesafiado2"));
+                    des.setResultTenistaDesafiado3((short) u.getInt("ResultTenistaDesafiado3"));
+                    des.setResultTenistaDesafiador1((short) u.getInt("ResultTenistaDesafiador1"));
+                    des.setResultTenistaDesafiador2((short) u.getInt("ResultTenistaDesafiador2"));
+                    des.setResultTenistaDesafiador3((short) u.getInt("ResultTenistaDesafiador3"));
+                    des.setWO((short)u.getInt("WO"));
+                    des.setConfirmadoCoordenador(u.getInt("ConfirmadoCoordenador"));
+                    des.setConfirmadoDesafiado(u.getInt("ConfirmadoDesafiado"));
+                    des.setConfirmadoDesafiador(u.getInt("ConfirmadoDesafiador"));
+                    des.setTieBreakDesafiado1((short) u.getInt("tieBreakDesafiado1"));
+                    des.setTieBreakDesafiado2((short) u.getInt("tieBreakDesafiado2"));
+                    des.setTieBreakDesafiado3((short) u.getInt("tieBreakDesafiado3"));
+                    des.setTieBreakDesafiador1((short) u.getInt("tieBreakDesafiador1"));
+                    des.setTieBreakDesafiador2((short) u.getInt("tieBreakDesafiador2"));
+                    des.setTieBreakDesafiador3((short) u.getInt("tieBreakDesafiador3"));
+
+
+                    if (tenistaDesc==1) {
+
+                        Log.i("TENISTADESC","ENTROU");
+                        ArrayList<Tenista> tenistas;
+                        Tenista tempDesafiado;
+
+                        Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
+                        tenistas = getTenistaBy(2,des.getIdTenistaDesafiado());
+                        tempDesafiado = tenistas.get(0);
+
+                         des.setTenistaDesafiado(tempDesafiado);
+
+                        ArrayList<Tenista> tenistas2;
+
+                        Tenista tempDesafiador;
+
+
+                        Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
+                        tenistas2 = getTenistaBy(2,des.getIdTenistaDesafiador());
+                        tempDesafiador = tenistas2.get(0);
+
+                        des.setTenistaDesafiador(tempDesafiador);
+
+
+
+
+
+                    }
 
                     desafiosArray.add(des);
                 }
@@ -281,13 +326,13 @@ public class DatabaseJson {
         if (type==1)
             params.put("idUsuarios", Integer.toString(id));
         else if (type==2)
-            params.put("idTenista", Integer.toString(id));
+            params.put("idTenistas", Integer.toString(id));
         else if (type==3)
             params.put("idCategoria",Integer.toString(id));
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaTenista.php", "GET", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenista.php", "GET", params);
 
             if (json == null)
                 return null;
@@ -334,7 +379,7 @@ public class DatabaseJson {
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaTenista.php", "GET", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenista.php", "GET", params);
 
             if (json == null)
                 return null;
@@ -385,7 +430,7 @@ public class DatabaseJson {
 
         try {
 //            Log.i("RANKING","ANTES JPARSER");
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaTenistasByRanking.php", "GET", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenistasByRanking.php", "GET", params);
   //          Log.i("RANKING","DEPOIS JPARSER");
             if (json == null)
                 return null;
@@ -436,7 +481,7 @@ public class DatabaseJson {
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaRankingHistorico.php", "GET", params);
+            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaRankingHistorico.php", "GET", params);
 
             if (json == null)
                 return null;
@@ -482,7 +527,7 @@ public ArrayList<Categoria> getCategorias()
 
         //params.put("Email","diegofsantos@gmail.com");
 
-        JSONObject json = jparser.makeHttpRequest("http://192.168.0.14/tenis/consultaCategoria.php", "POST", params);
+        JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaCategoria.php", "POST", params);
         if (json != null)
             if (json.getInt("result")==1) {
                 categoriasArray = json.getJSONArray("categorias");

@@ -120,7 +120,7 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
 
             if (posicao!=null) {
                 int diferenca = (posicao-1) - position;
-                if (diferenca >= 1 && diferenca<=3) //3 posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
+                if ( (diferenca >= 1 && diferenca<=3) && (!item.getTemJogoMarcado())) //3 posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
                 {
                   //  convertView.setBackgroundColor(Color.parseColor("#FFFFE7B3"));
                     //viewHolder.imgView.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.tennis_icon_32));

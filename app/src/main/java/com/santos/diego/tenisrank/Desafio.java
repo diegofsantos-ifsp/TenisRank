@@ -5,19 +5,35 @@ package com.santos.diego.tenisrank;
  */
 public class Desafio {
     private int idDesafio;
-    private int idTenistaDesafiado;
-    private int idTenistaDesafiador;
+    private Integer idTenistaDesafiado;
+    private Integer idTenistaDesafiador;
     private int idQuadra;
     private String Data;
     private String Hora;
-    boolean jogado;
-    boolean AceitoDesafiado;
-    boolean AceitoDesafiador;
+    int jogado;
+    int AceitoDesafiado;
+    int AceitoDesafiador;
     private String Descricao;
     private short ResultTenistaDesafiado1;
     private short ResultTenistaDesafiador1;
     private short tieBreakDesafiado1;
     private short tieBreakDesafiador1;
+    private Tenista tenistaDesafiado;
+    private Tenista tenistaDesafiador;
+
+    private short ResultTenistaDesafiado2;
+    private short ResultTenistaDesafiador2;
+    private short tieBreakDesafiado2;
+    private short tieBreakDesafiador2;
+    private short ResultTenistaDesafiado3;
+    private short ResultTenistaDesafiador3;
+    private short tieBreakDesafiado3;
+    private short tieBreakDesafiador3;
+    private short WO;
+    int confirmadoCoordenador;
+    int confirmadoDesafiado;
+    int confirmadoDesafiador;
+
 
     public int getIdDesafio() {
         return idDesafio;
@@ -27,19 +43,19 @@ public class Desafio {
         this.idDesafio = idDesafio;
     }
 
-    public int getIdTenistaDesafiado() {
+    public Integer getIdTenistaDesafiado() {
         return idTenistaDesafiado;
     }
 
-    public void setIdTenistaDesafiado(int idTenistaDesafiado) {
+    public void setIdTenistaDesafiado(Integer idTenistaDesafiado) {
         this.idTenistaDesafiado = idTenistaDesafiado;
     }
 
-    public int getIdTenistaDesafiador() {
+    public Integer getIdTenistaDesafiador() {
         return idTenistaDesafiador;
     }
 
-    public void setIdTenistaDesafiador(int idTenistaDesafiador) {
+    public void setIdTenistaDesafiador(Integer idTenistaDesafiador) {
         this.idTenistaDesafiador = idTenistaDesafiador;
     }
 
@@ -67,27 +83,27 @@ public class Desafio {
         Hora = hora;
     }
 
-    public boolean isJogado() {
+    public int isJogado() {
         return jogado;
     }
 
-    public void setJogado(boolean jogado) {
+    public void setJogado(int jogado) {
         this.jogado = jogado;
     }
 
-    public boolean isAceitoDesafiado() {
+    public int isAceitoDesafiado() {
         return AceitoDesafiado;
     }
 
-    public void setAceitoDesafiado(boolean aceitoDesafiado) {
+    public void setAceitoDesafiado(int aceitoDesafiado) {
         AceitoDesafiado = aceitoDesafiado;
     }
 
-    public boolean isAceitoDesafiador() {
+    public int isAceitoDesafiador() {
         return AceitoDesafiador;
     }
 
-    public void setAceitoDesafiador(boolean aceitoDesafiador) {
+    public void setAceitoDesafiador(int aceitoDesafiador) {
         AceitoDesafiador = aceitoDesafiador;
     }
 
@@ -203,40 +219,44 @@ public class Desafio {
         this.WO = WO;
     }
 
-    public boolean isConfirmadoCoordenador() {
+    public int isConfirmadoCoordenador() {
         return confirmadoCoordenador;
     }
 
-    public void setConfirmadoCoordenador(boolean confirmadoCoordenador) {
+    public void setConfirmadoCoordenador(int confirmadoCoordenador) {
         this.confirmadoCoordenador = confirmadoCoordenador;
     }
 
-    public boolean isConfirmadoDesafiado() {
+    public int isConfirmadoDesafiado() {
         return confirmadoDesafiado;
     }
 
-    public void setConfirmadoDesafiado(boolean confirmadoDesafiado) {
+    public void setConfirmadoDesafiado(int confirmadoDesafiado) {
         this.confirmadoDesafiado = confirmadoDesafiado;
     }
 
-    public boolean isConfirmadoDesafiador() {
+    public int isConfirmadoDesafiador() {
         return confirmadoDesafiador;
     }
 
-    public void setConfirmadoDesafiador(boolean confirmadoDesafiador) {
+    public void setConfirmadoDesafiador(int confirmadoDesafiador) {
         this.confirmadoDesafiador = confirmadoDesafiador;
     }
 
-    private short ResultTenistaDesafiado2;
-    private short ResultTenistaDesafiador2;
-    private short tieBreakDesafiado2;
-    private short tieBreakDesafiador2;
-    private short ResultTenistaDesafiado3;
-    private short ResultTenistaDesafiador3;
-    private short tieBreakDesafiado3;
-    private short tieBreakDesafiador3;
-    private short WO;
-    boolean confirmadoCoordenador;
-    boolean confirmadoDesafiado;
-    boolean confirmadoDesafiador;
+
+    public Tenista getTenistaDesafiado() {
+        return tenistaDesafiado;
+    }
+
+    public void setTenistaDesafiado(Tenista tenistaDesafiado) {
+        this.tenistaDesafiado = tenistaDesafiado;
+    }
+
+    public Tenista getTenistaDesafiador() {
+        return tenistaDesafiador;
+    }
+
+    public void setTenistaDesafiador(Tenista tenistaDesafiador) {
+        this.tenistaDesafiador = tenistaDesafiador;
+    }
 }

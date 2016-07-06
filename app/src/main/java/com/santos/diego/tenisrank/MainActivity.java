@@ -29,10 +29,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -275,7 +277,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
+//faz a consulta na tabela de ranking e retorna o ranking atual (último registro)
     private class RankingAsyncTask extends AsyncTask<Void, Integer,ArrayList<RankingHistorico> > {
 
         private ArrayList<RankingHistorico> temp = null;
@@ -283,11 +285,22 @@ public class MainActivity extends AppCompatActivity
         private Integer tipo = null;
         private Boolean updateTenistas=true;
         private Integer idcat = null;
+        private TextView textViewDesafiador;
+        private TextView textViewDesafiado;
+        private TextView data;
+        private TextView hora;
+        private LinearLayout linearLayout;
 
         RankingAsyncTask (Integer t, Integer idCat)
         {
             tipo=t;
             idcat = idCat;
+            textViewDesafiador = (TextView) findViewById(R.id.textView_Desafiador);
+            textViewDesafiado = (TextView) findViewById(R.id.textView_Desafiado);
+            data = (TextView) findViewById(R.id.textView_Proxima_Data);
+            hora = (TextView) findViewById(R.id.textView_Proxima_Hora);
+            linearLayout = (LinearLayout) findViewById(R.id.layoutStatusBar);
+
         } //se tipo = 1 ler o último registro adicionado
 
 
@@ -315,6 +328,51 @@ public class MainActivity extends AppCompatActivity
             //Thread.sleep(1000);
 
             temp = json.getRanking(idcat);
+
+
+
+            //atualiza os dados do próximo jogo do usuário atual
+
+            if (idTenista!=0) {
+                final ArrayList<Desafio> des;
+
+
+                des = json.getJogosByTenista(0, idTenista, 1);
+
+                if (des!=null) {
+                  //  Log.i("TENISTA_ID",idTenista.toString());
+                    //Log.i("TENISTA",des.get(0).getData());
+                    final Tenista desafiado = des.get(0).getTenistaDesafiado();
+                    final Tenista desafiador = des.get(0).getTenistaDesafiador();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String strDesafiado;
+                            String strDesafiador;
+
+                            strDesafiado = desafiado.getUsuario().getNome();
+                            strDesafiador = desafiador.getUsuario().getNome();
+
+                            strDesafiado=strDesafiado.substring(0,strDesafiado.indexOf(" "));
+                            strDesafiador=strDesafiador.substring(0,strDesafiador.indexOf(" "));
+
+                            textViewDesafiador.setText(strDesafiador);
+                            textViewDesafiado.setText(strDesafiado);
+                            data.setText(des.get(0).getData());
+                            hora.setText(des.get(0).getHora());
+                            linearLayout.setVisibility(View.VISIBLE);
+
+
+                        }
+                    });
+
+                  //  Log.i("TENISTADESAFIADO", desafiado.getUsuario().getNome());
+                    //Log.i("TENISTADESAFIADOR",desafiador.getUsuario().getNome());
+                   // Log.i("TENISTADESAFIADOR", desafiador.getUsuario().getNome());
+               }
+            }
+
             //temp = json.getTenistasByRankingID(2);
 
             //publishProgress(60);
@@ -381,7 +439,7 @@ public class MainActivity extends AppCompatActivity
     private class TenistasRankingAsyncTask extends AsyncTask<Void, Integer,ArrayList<Tenista> > {
 
         private ArrayList<Tenista> temp = null;
-        private ArrayList<Desafio> tempDesafio = null;
+        //private ArrayList<Desafio> tempDesafio = null;
        // private DatabaseJson json = null;
         private RankingHistorico rank_temp;
 
@@ -397,7 +455,9 @@ public class MainActivity extends AppCompatActivity
           //  if (ranking!=null || ranking==null) {
 //                publishProgress(10);
                 //Thread.sleep(1000);
+
                 DatabaseJson json = new DatabaseJson();
+
                // publishProgress(30);
                 //Thread.sleep(1000);
   //              Log.i("RANKING","DEPOIS");
@@ -405,10 +465,14 @@ public class MainActivity extends AppCompatActivity
                 temp = json.getTenistasByRankingID(rank_temp.getIdRanking());
 
             //atualiza a posição atual no ranking do usuário
+                int pos=0;
+
                 if (temp!=null) {
                     for (int x = 0; x < temp.size(); x++)
                         if (temp.get(x).getUsuario().getEmail().compareToIgnoreCase(email) == 0) {
                             posicaoUsuario = temp.get(x).getPosicaoAtualRanking();
+
+                            pos = x;
     //                        Log.i("POSICAO", posicaoUsuario.toString());
                             break;
 
@@ -416,11 +480,20 @@ public class MainActivity extends AppCompatActivity
                 }
 
             //verifica (de acordo com as regras) os jogadores acima do jogador atual que possui jogos marcados
-            //e, portanto, não poderá aceitar desafios
+            //e, portanto, não poderão aceitar desafios
 
 
+            ArrayList<Desafio> tempDesafio = null;
+            for (int x=pos; x>=pos-3; x--) {
+                tempDesafio = json.getJogosByTenista(0,temp.get(x).getIdTenista(),0);
 
-
+                if (tempDesafio!=null)
+                {
+                    temp.get(x).setTemJogoMarcado(true);
+                }
+                else
+                    temp.get(x).setTemJogoMarcado(false);
+            }
 
                 //publishProgress(60);
                 //Thread.sleep(1000);

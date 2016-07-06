@@ -8,7 +8,7 @@ include 'connect.php';
 if (isset($_GET['idRanking']))
 {
 	$idRanking=$_GET['idRanking'];
-	$sql = "select usuario.idUsuarios,usuario.Nome,usuario.Endereco,usuario.Telefone,usuario.Email,usuario.NomeUsuario,tenista.idTenistas,tenista_has_rankinghistorico.Posicao,tenista.Categoria_idCategoria  from usuario,tenista,tenista_has_rankinghistorico,rankingHistorico where rankingHistorico.idRankingHistorico='$idRanking' AND rankinghistorico.idRankingHistorico=tenista_has_rankinghistorico.RankingHistorico_idRankingHistorico AND tenista_has_rankinghistorico.Tenista_idTenistas=tenista.idTenistas AND usuario.idUsuarios=tenista.Usuarios_idUsuarios order by tenista_has_rankinghistorico.Posicao;
+	$sql = "select usuario.idUsuarios,usuario.Nome,usuario.Endereco,usuario.Telefone,usuario.Email,usuario.NomeUsuario,usuario.CadastroValido,tenista.idTenistas,tenista_has_rankinghistorico.Posicao,tenista.Categoria_idCategoria  from usuario,tenista,tenista_has_rankinghistorico,rankingHistorico where rankingHistorico.idRankingHistorico='$idRanking' AND rankinghistorico.idRankingHistorico=tenista_has_rankinghistorico.RankingHistorico_idRankingHistorico AND tenista_has_rankinghistorico.Tenista_idTenistas=tenista.idTenistas AND usuario.idUsuarios=tenista.Usuarios_idUsuarios order by tenista_has_rankinghistorico.Posicao;
 			";
 }
 
