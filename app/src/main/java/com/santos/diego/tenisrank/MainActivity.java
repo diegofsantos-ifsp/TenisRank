@@ -11,8 +11,10 @@ android:centerColor="#4CAF50"
  */
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -217,6 +219,11 @@ public class MainActivity extends AppCompatActivity
         });
 
 
+       // SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
+     //   IP = shared.getString("edit_text_preference_ip","192.168.0.15");
+        //IP = "192.168.0.15";
+
+
     }
 
     @Override
@@ -245,6 +252,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            Intent intent = new Intent(MainActivity.this,PreferencesActivity.class);
+            this.startActivity(intent);
             return true;
         }
 
@@ -324,6 +334,8 @@ public class MainActivity extends AppCompatActivity
             publishProgress(10);
             //Thread.sleep(1000);
             DatabaseJson json = new DatabaseJson();
+
+            //json.setIP(IP);
             // publishProgress(30);
             //Thread.sleep(1000);
 
@@ -457,6 +469,7 @@ public class MainActivity extends AppCompatActivity
                 //Thread.sleep(1000);
 
                 DatabaseJson json = new DatabaseJson();
+                //json.setIP(IP);
 
                // publishProgress(30);
                 //Thread.sleep(1000);
@@ -547,6 +560,8 @@ public class MainActivity extends AppCompatActivity
             publishProgress(10);
             //Thread.sleep(1000);
             DatabaseJson json = new DatabaseJson();
+
+           // json.setIP(IP);
             // publishProgress(30);
             //Thread.sleep(1000);
             Log.i("RANKING","DEPOIS");

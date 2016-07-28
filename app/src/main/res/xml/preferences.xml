@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Regras">
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Jogadores para desafiar"
+            android:key="edit_text_preference_qtd_jogadores"
+            android:summary="Quantidade de jogadores que o usuário poderá desafiar" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Servidor">
+
+        <EditTextPreference
+            android:defaultValue="192.168.0.15"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Endereço IP"
+            android:key="edit_text_preference_ip"
+            android:summary="Endereço IP do servidor" />
+    </PreferenceCategory>
+</PreferenceScreen>

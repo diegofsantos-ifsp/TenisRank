@@ -1,5 +1,6 @@
 package com.santos.diego.tenisrank;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,6 +20,9 @@ public class DatabaseJson {
 
 
     private URL url;
+    private String IP;
+
+
 
     JSONParser jparser = new JSONParser();
 
@@ -29,7 +33,13 @@ public class DatabaseJson {
     JSONArray usuariosJson = null;
     JSONArray tenistasJson = null;
 
+
     String error;
+
+    DatabaseJson()
+    {
+        IP = "192.168.0.15";
+    }
 
 
     public String getError() {
@@ -53,7 +63,9 @@ public class DatabaseJson {
 
             //params.put("Email","diegofsantos@gmail.com");
 
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
+            String http = "http://"+IP+"/tenis/consultaUsuario.php";
+            Log.i("HTTP",http);
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
             if (json != null)
             if (json.getInt("result")==1) {
                 usuariosJson = json.getJSONArray("usuarios");
@@ -92,7 +104,8 @@ public class DatabaseJson {
         try {
             params.put("Nome","Diego");
 
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
+            String http = "http://"+IP+"/tenis/consultaUsuario.php";
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
 
             if (json.getInt("result")==1) {
                 usuariosJson = json.getJSONArray("usuarios");
@@ -129,7 +142,9 @@ public class DatabaseJson {
 
         Log.v("JSON","ANTES");
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
+            String http = "http://"+IP+"/tenis/consultaUsuario.php";
+            Log.i("HTTP",http);
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
 
             if (json == null)
                 return null;
@@ -170,7 +185,8 @@ public class DatabaseJson {
 
         Log.v("JSON","ANTES");
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaUsuario.php", "POST", params);
+            String http = "http://"+IP+"/tenis/consultaUsuario.php";
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
 
             if (json == null)
                 return null;
@@ -229,7 +245,9 @@ public class DatabaseJson {
             params.put("idTenistas",Integer.toString(idTen));
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaJogoByTenista.php", "GET", params);
+
+            String http = "http://"+IP+"/tenis/consultaJogoByTenista.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
 
             if (json == null)
                 return null;
@@ -332,7 +350,8 @@ public class DatabaseJson {
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenista.php", "GET", params);
+            String http = "http://"+IP+"/tenis/consultaTenista.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
 
             if (json == null)
                 return null;
@@ -379,7 +398,8 @@ public class DatabaseJson {
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenista.php", "GET", params);
+            String http = "http://"+IP+"/tenis/consultaTenista.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
 
             if (json == null)
                 return null;
@@ -430,7 +450,9 @@ public class DatabaseJson {
 
         try {
 //            Log.i("RANKING","ANTES JPARSER");
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaTenistasByRanking.php", "GET", params);
+
+            String http = "http://"+IP+"/tenis/consultaTenistasByRanking.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
   //          Log.i("RANKING","DEPOIS JPARSER");
             if (json == null)
                 return null;
@@ -481,7 +503,8 @@ public class DatabaseJson {
 
 
         try {
-            JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaRankingHistorico.php", "GET", params);
+            String http = "http://"+IP+"/tenis/consultaRankingHistorico.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
 
             if (json == null)
                 return null;
@@ -527,7 +550,8 @@ public ArrayList<Categoria> getCategorias()
 
         //params.put("Email","diegofsantos@gmail.com");
 
-        JSONObject json = jparser.makeHttpRequest("http://192.168.0.15/tenis/consultaCategoria.php", "POST", params);
+        String http = "http://"+IP+"/tenis/consultaCategoria.php";
+        JSONObject json = jparser.makeHttpRequest(http, "POST", params);
         if (json != null)
             if (json.getInt("result")==1) {
                 categoriasArray = json.getJSONArray("categorias");
@@ -552,7 +576,13 @@ public ArrayList<Categoria> getCategorias()
 }
 
 
+    public String getIP() {
+        return IP;
+    }
 
+    public void setIP(String IP) {
+        this.IP = IP;
+    }
 }
 
 
