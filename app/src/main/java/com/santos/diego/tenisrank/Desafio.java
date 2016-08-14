@@ -8,6 +8,8 @@ public class Desafio {
     private Integer idTenistaDesafiado;
     private Integer idTenistaDesafiador;
     private int idQuadra;
+
+    private int ganhador;
     private String Data;
     private String Hora;
     int jogado;
@@ -33,6 +35,15 @@ public class Desafio {
     int confirmadoCoordenador;
     int confirmadoDesafiado;
     int confirmadoDesafiador;
+
+    public int getGanhador() {
+        return ganhador;
+    }
+
+    public void setGanhador(int ganhador) {
+        this.ganhador = ganhador;
+    }
+
 
 
     public int getIdDesafio() {

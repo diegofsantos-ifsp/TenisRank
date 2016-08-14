@@ -19,7 +19,8 @@ import java.util.HashMap;
 
 public class JSONParser {
 
-    String charset = "UTF-8";
+    //String charset = "UTF-8";
+    String charset = "ISO8859-1";
     HttpURLConnection conn;
     DataOutputStream wr;
     StringBuilder result;
@@ -65,7 +66,7 @@ public class JSONParser {
                 i++;
             }
     //    }
-        Log.i("OBJ","Antes POST");
+    //    Log.i("OBJ","Antes POST");
         if (method.equals("POST")) {
             // request method is POST
             try {
@@ -132,9 +133,9 @@ public class JSONParser {
             try {
                 //Receive the response from the server
 
-                Log.i("CONN", "ANTES");
+//                Log.i("CONN", "ANTES");
                 InputStream in = new BufferedInputStream(conn.getInputStream());
-                Log.i("CONN", "ANTES INPUTSTREAM");
+  //              Log.i("CONN", "ANTES INPUTSTREAM");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 result = new StringBuilder();
                 String line;
@@ -142,7 +143,7 @@ public class JSONParser {
                     result.append(line);
                 }
 
-                Log.d("JSON Parser", "result: " + result.toString());
+//                Log.d("JSON Parser", "result: " + result.toString());
 
             } catch (IOException e) {
                 errorcode = 1;

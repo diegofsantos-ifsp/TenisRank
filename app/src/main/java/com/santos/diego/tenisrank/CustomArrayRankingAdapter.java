@@ -1,10 +1,14 @@
 package com.santos.diego.tenisrank;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,6 +132,35 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                     viewHolder.imgView.setFocusable(false);
                     viewHolder.imgView.setFocusableInTouchMode(false);
 
+                    viewHolder.imgView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                            builder1.setMessage("Você já conversou com o jogador e possui uma data definida para o jogo?");
+                            builder1.setCancelable(true);
+
+                            builder1.setPositiveButton(
+                                    "Sim",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            builder1.setNegativeButton(
+                                    "Não",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        }
+                    });
+
+
                     viewHolder.imgButton2.setVisibility(View.VISIBLE);
                     viewHolder.imgButton2.setFocusable(false);
                     viewHolder.imgButton2.setFocusableInTouchMode(false);
@@ -137,7 +170,15 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                             Intent intent = new Intent(Intent.ACTION_DIAL);
                             intent.setData(Uri.parse("tel:"+item.getUsuario().getTelefone()));
                             try {
+                                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                                SharedPreferences.Editor editor = pref.edit();
+                                editor.putBoolean("ligou",true);
+                                editor.putString("nome_jogador_desafiado",item.getUsuario().getNome());
+                                editor.commit();
+
                                 context.startActivity(intent);
+
+
                             }catch (SecurityException e){
                                 Log.i("Excecao","ENTROU");
                                 e.printStackTrace();

@@ -263,9 +263,9 @@ public class DatabaseJson {
 
                     des.setIdDesafio(u.getInt("idDesafios"));
                     des.setIdTenistaDesafiador(u.getInt("TenistaDesafiador_idTenistas"));
-                    Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
+        //            Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
                     des.setIdTenistaDesafiado(u.getInt("TenistaDesafiado"));
-                    Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
+      //              Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
                     des.setIdQuadra(u.getInt("Quadra_idQuadra"));
                     des.setData(u.getString("Data"));
                     des.setHora(u.getString("Hora"));
@@ -288,7 +288,7 @@ public class DatabaseJson {
                     des.setTieBreakDesafiador1((short) u.getInt("tieBreakDesafiador1"));
                     des.setTieBreakDesafiador2((short) u.getInt("tieBreakDesafiador2"));
                     des.setTieBreakDesafiador3((short) u.getInt("tieBreakDesafiador3"));
-
+                    des.setGanhador(u.getInt("Ganhador"));
 
                     if (tenistaDesc==1) {
 
@@ -328,6 +328,118 @@ public class DatabaseJson {
 
         return desafiosArray;
     }
+
+
+
+    //retorna os jogos de um determinado tenista
+    // Se type=0 retorna os próximos jogos
+    // Se type=1 retorna os jogos passados
+    // Se type-=2 retorna todos os jogos
+    // Se tenistaDesc = 1 (retorna a descrição dos tenistas)
+    public ArrayList<Desafio> getJogos(int type, int tenistaDesc)
+    {
+        ArrayList<Desafio> desafiosArray = null;
+        JSONArray desafiosJson = null;
+
+        HashMap<String,String> params = new HashMap<String,String>();
+
+
+        if (type==0) {
+            params.put("PORJOGAR", "1");
+
+        }
+        else if (type==1) {
+            params.put("PORJOGAR", "0");
+
+
+        }
+
+
+        try {
+
+            String http = "http://"+IP+"/tenis/consultaJogos.php";
+            JSONObject json = jparser.makeHttpRequest(http, "GET", params);
+
+            if (json == null)
+                return null;
+
+            if (json.getInt("result")==1) {
+                desafiosJson = json.getJSONArray("desafios");
+                desafiosArray = new ArrayList<Desafio>();
+
+                for (int i=0; i< desafiosJson.length(); i++)
+                {
+                    JSONObject u = desafiosJson.getJSONObject(i);
+                    Desafio des = new Desafio();
+
+                    des.setIdDesafio(u.getInt("idDesafios"));
+                    des.setIdTenistaDesafiador(u.getInt("TenistaDesafiador_idTenistas"));
+                    Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
+                    des.setIdTenistaDesafiado(u.getInt("TenistaDesafiado"));
+                    Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
+                    des.setIdQuadra(u.getInt("Quadra_idQuadra"));
+                    des.setData(u.getString("Data"));
+                    des.setHora(u.getString("Hora"));
+                    des.setJogado(u.getInt("Jogado"));
+                    des.setAceitoDesafiado(u.getInt("AceitoDesafiado"));
+                    des.setAceitoDesafiador(u.getInt("AceitoDesafiador"));
+                    des.setResultTenistaDesafiado1((short) u.getInt("ResultTenistaDesafiado1"));
+                    des.setResultTenistaDesafiado2((short) u.getInt("ResultTenistaDesafiado2"));
+                    des.setResultTenistaDesafiado3((short) u.getInt("ResultTenistaDesafiado3"));
+                    des.setResultTenistaDesafiador1((short) u.getInt("ResultTenistaDesafiador1"));
+                    des.setResultTenistaDesafiador2((short) u.getInt("ResultTenistaDesafiador2"));
+                    des.setResultTenistaDesafiador3((short) u.getInt("ResultTenistaDesafiador3"));
+                    des.setWO((short)u.getInt("WO"));
+                    des.setConfirmadoCoordenador(u.getInt("ConfirmadoCoordenador"));
+                    des.setConfirmadoDesafiado(u.getInt("ConfirmadoDesafiado"));
+                    des.setConfirmadoDesafiador(u.getInt("ConfirmadoDesafiador"));
+                    des.setTieBreakDesafiado1((short) u.getInt("tieBreakDesafiado1"));
+                    des.setTieBreakDesafiado2((short) u.getInt("tieBreakDesafiado2"));
+                    des.setTieBreakDesafiado3((short) u.getInt("tieBreakDesafiado3"));
+                    des.setTieBreakDesafiador1((short) u.getInt("tieBreakDesafiador1"));
+                    des.setTieBreakDesafiador2((short) u.getInt("tieBreakDesafiador2"));
+                    des.setTieBreakDesafiador3((short) u.getInt("tieBreakDesafiador3"));
+                    des.setGanhador(u.getInt("Ganhador"));
+
+                    if (tenistaDesc==1) {
+
+                        Log.i("TENISTADESC","ENTROU");
+                        ArrayList<Tenista> tenistas;
+                        Tenista tempDesafiado;
+
+                        Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
+                        tenistas = getTenistaBy(2,des.getIdTenistaDesafiado());
+                        tempDesafiado = tenistas.get(0);
+
+                        des.setTenistaDesafiado(tempDesafiado);
+
+                        ArrayList<Tenista> tenistas2;
+
+                        Tenista tempDesafiador;
+
+
+                        Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
+                        tenistas2 = getTenistaBy(2,des.getIdTenistaDesafiador());
+                        tempDesafiador = tenistas2.get(0);
+
+                        des.setTenistaDesafiador(tempDesafiador);
+
+
+
+
+
+                    }
+
+                    desafiosArray.add(des);
+                }
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); }
+
+
+        return desafiosArray;
+    }
+
 
 
 

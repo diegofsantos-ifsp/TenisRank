@@ -10,19 +10,24 @@ android:centerColor="#4CAF50"
         android:type="linear" />
  */
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,7 +46,7 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentJogos.OnFragmentInteractionListener, CustomDialogDesafioMarcado.OnCustomDialogDesafioInteractionListener{
 
     private String nome = null;
     private String email = null;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<Tenista> tenistas = null; //armazena os dados de todos os tenistas do ranking gerado
    // private Integer idUsuario = null;
     CustomArrayRankingAdapter adapter = null;
-    private TenistasRankingAsyncTask tenistasrankingAsync = null;
+ //   private TenistasRankingAsyncTask tenistasrankingAsync = null;
     private ArrayAdapter<String> adapter_spinner = null;
 
 
@@ -76,11 +81,11 @@ public class MainActivity extends AppCompatActivity
         toolbar.setBackground(ContextCompat.getDrawable(this,R.drawable.side_nav_bar));
         //getSupportActionBar().setTitle("TESTE");
 
-
+/*
         spinner = (Spinner) findViewById(R.id.spinner_nav);
         textView_Data = (TextView) findViewById(R.id.textview_data);
         textView_Hora = (TextView) findViewById(R.id.textview_hora);
-
+*/
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navigationView.getMenu().getItem(1).setChecked(true);
 
         Intent intent = getIntent();
         idUsuario = intent.getIntExtra("idUsuario", 0);
@@ -107,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         nome = intent.getStringExtra("Nome");
         email = intent.getStringExtra("Email");
 
-
+/*
         nomesCategorias = new ArrayList<String>();
         adapter_spinner = new ArrayAdapter<String>(this,R.layout.spinner_item,nomesCategorias);
         adapter_spinner.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -138,9 +144,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-
-
+        */
 
         View header = navigationView.getHeaderView(0);
         TextView tvnome = (TextView) header.findViewById(R.id.textViewNome);
@@ -148,8 +152,14 @@ public class MainActivity extends AppCompatActivity
         TextView tv = (TextView) header.findViewById(R.id.textView);
         tv.setText(email);
 
+
+        Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+        FragmentManager fragmentManager = this.getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+
         //lista do ranking
-        lv = (ListView) findViewById(R.id.listView_Ranking);
+        //lv = (ListView) findViewById(R.id.listView_Ranking);   ///aqui tava
 
 /*
         Tenista item = new Tenista();
@@ -169,7 +179,7 @@ public class MainActivity extends AppCompatActivity
         items.add(item2);
 
   */
-        final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+       // final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh); //aqui tava
 
 
         //ranking = new ArrayList<RankingHistorico>();
@@ -180,13 +190,13 @@ public class MainActivity extends AppCompatActivity
 
         //Log.i("RANKING",ranking.get(0).getData());
         // popula a lista com os tenistas de acordo com o ID do último ranking gerado
-        tenistas = new ArrayList<Tenista>();
-
-        adapter = new CustomArrayRankingAdapter(this, tenistas);
-        lv.setAdapter(adapter);
-        adapter.setNome(nome);
-        adapter.setEmail(email);
-        adapter.setidUsuario(idUsuario);
+//        tenistas = new ArrayList<Tenista>();
+//
+  //      adapter = new CustomArrayRankingAdapter(this, tenistas);
+    //    lv.setAdapter(adapter);
+      //  adapter.setNome(nome);
+        //adapter.setEmail(email);
+        //adapter.setidUsuario(idUsuario);
 
 
         /*
@@ -202,12 +212,12 @@ public class MainActivity extends AppCompatActivity
 */
 
 
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                RankingAsyncTask rasync = new RankingAsyncTask(0,categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
-                rasync.execute((Void) null);
-                refreshLayout.setRefreshing(false);
+//        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+  //          @Override
+    //        public void onRefresh() {
+      //          RankingAsyncTask rasync = new RankingAsyncTask(0,categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+        //        rasync.execute((Void) null);
+          //      refreshLayout.setRefreshing(false);
               //  Log.i("REFRESH", "DEU CERTO");
                 /*
                 if (ranking!=null) {
@@ -215,13 +225,89 @@ public class MainActivity extends AppCompatActivity
                     tenistasrankingAsync.execute((Void) null);
                     refreshLayout.setRefreshing(false);
                 }*/
-            }
-        });
+          //  }
+       // });
 
 
        // SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(this);
      //   IP = shared.getString("edit_text_preference_ip","192.168.0.15");
         //IP = "192.168.0.15";
+
+
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+  //      SharedPreferences.Editor editor = pref.edit();
+    //    editor.putBoolean("ligou",false);
+      //  editor.commit();
+
+
+
+    }
+
+
+    public void showDialog(String Msg)
+    {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage(Msg);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Sim",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        FragmentManager fm = getSupportFragmentManager();
+                        CustomDialogDesafioMarcado dialogcustom = new CustomDialogDesafioMarcado();
+                        dialogcustom.show(fm,"customdialog");
+
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "Não",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+
+    }
+
+
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean ligou = pref.getBoolean("ligou",false);
+        String jogador = pref.getString("nome_jogador_desafiado",null);
+        String msg = new String();
+
+
+        if (jogador == null)
+            msg ="Você ligou para um jogador para marcar um desafio. O jogo foi agendado?";
+        else
+            msg = "Você ligou para o jogador \"" + jogador + "\" para marcar um desafio. O jogo foi agendado?";
+
+        if (ligou)
+        {
+            showDialog(msg);
+
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putBoolean("ligou",false);
+            editor.putString("nome_jogador_desafiado",null);
+            editor.commit();
+
+        }
 
 
     }
@@ -253,8 +339,11 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 
-            Intent intent = new Intent(MainActivity.this,PreferencesActivity.class);
+
+            Intent intent = new Intent(this,PreferencesActivity.class);
+
             this.startActivity(intent);
+
             return true;
         }
 
@@ -267,9 +356,18 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_jogos) {
+            Fragment fragment = FragmentJogos.newInstance(idUsuario,idTenista,nome,email);
+            FragmentManager fragmentManager = this.getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+            this.setTitle("Jogos");
+
+
+        } else if (id == R.id.nav_ranking) {
+            Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+            FragmentManager fragmentManager = this.getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+            this.setTitle("Ranking");
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -287,323 +385,42 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-//faz a consulta na tabela de ranking e retorna o ranking atual (último registro)
-    private class RankingAsyncTask extends AsyncTask<Void, Integer,ArrayList<RankingHistorico> > {
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        private ArrayList<RankingHistorico> temp = null;
-        // private DatabaseJson json = null;
-        private Integer tipo = null;
-        private Boolean updateTenistas=true;
-        private Integer idcat = null;
-        private TextView textViewDesafiador;
-        private TextView textViewDesafiado;
-        private TextView data;
-        private TextView hora;
-        private LinearLayout linearLayout;
+    }
 
-        RankingAsyncTask (Integer t, Integer idCat)
-        {
-            tipo=t;
-            idcat = idCat;
-            textViewDesafiador = (TextView) findViewById(R.id.textView_Desafiador);
-            textViewDesafiado = (TextView) findViewById(R.id.textView_Desafiado);
-            data = (TextView) findViewById(R.id.textView_Proxima_Data);
-            hora = (TextView) findViewById(R.id.textView_Proxima_Hora);
-            linearLayout = (LinearLayout) findViewById(R.id.layoutStatusBar);
-
-        } //se tipo = 1 ler o último registro adicionado
+    @Override
+    public void onCustomDialogFragmentInteraction(String Data, String Hora) {
+        Log.i("BUTTON","PRESSED");
+        Log.i("BUTTON",Data);
+        Log.i("BUTTON",Hora);
+    }
 
 
-        public Boolean getUpdateTenistas() {
-            return updateTenistas;
-        }
+private class InsertDesafio extends AsyncTask <ArrayList<Desafio>, Integer, Boolean>
+{
+    @Override
+    protected void onPreExecute()
+    {
+        super.onPreExecute();
+    }
 
-        public void setUpdateTenistas(Boolean updateTenistas) {
-            this.updateTenistas = updateTenistas;
-        }
+    @Override
+    protected void onPostExecute(Boolean b)
+    {
+        super.onPostExecute(b);
 
-
-
-
-
-        @Override
-        protected ArrayList<RankingHistorico> doInBackground(Void... values) {
-
-
-            //  if (ranking!=null || ranking==null) {
-            publishProgress(10);
-            //Thread.sleep(1000);
-            DatabaseJson json = new DatabaseJson();
-
-            //json.setIP(IP);
-            // publishProgress(30);
-            //Thread.sleep(1000);
-
-            temp = json.getRanking(idcat);
-
-
-
-            //atualiza os dados do próximo jogo do usuário atual
-
-            if (idTenista!=0) {
-                final ArrayList<Desafio> des;
-
-
-                des = json.getJogosByTenista(0, idTenista, 1);
-
-                if (des!=null) {
-                  //  Log.i("TENISTA_ID",idTenista.toString());
-                    //Log.i("TENISTA",des.get(0).getData());
-                    final Tenista desafiado = des.get(0).getTenistaDesafiado();
-                    final Tenista desafiador = des.get(0).getTenistaDesafiador();
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String strDesafiado;
-                            String strDesafiador;
-
-                            strDesafiado = desafiado.getUsuario().getNome();
-                            strDesafiador = desafiador.getUsuario().getNome();
-
-                            strDesafiado=strDesafiado.substring(0,strDesafiado.indexOf(" "));
-                            strDesafiador=strDesafiador.substring(0,strDesafiador.indexOf(" "));
-
-                            textViewDesafiador.setText(strDesafiador);
-                            textViewDesafiado.setText(strDesafiado);
-                            data.setText(des.get(0).getData());
-                            hora.setText(des.get(0).getHora());
-                            linearLayout.setVisibility(View.VISIBLE);
-
-
-                        }
-                    });
-
-                  //  Log.i("TENISTADESAFIADO", desafiado.getUsuario().getNome());
-                    //Log.i("TENISTADESAFIADOR",desafiador.getUsuario().getNome());
-                   // Log.i("TENISTADESAFIADOR", desafiador.getUsuario().getNome());
-               }
-            }
-
-            //temp = json.getTenistasByRankingID(2);
-
-            //publishProgress(60);
-            //Thread.sleep(1000);
-
-            return temp;
-
-            //}
-
-
-            //return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<RankingHistorico> rank) {
-            super.onPostExecute(rank);
-            ranking = rank;
-            if (rank!=null && !rank.isEmpty()) {
-           //     adapter.setItem(tenistas);
-                final RankingHistorico rhistorico = ranking.get(0);
-
-               // toolbar.setSubtitle("Gerado em: "+rhistorico.getData()+" as " + rhistorico.getHora());
-                textView_Data.setText(rhistorico.getData());
-                textView_Hora.setText(rhistorico.getHora());
-
-                if (updateTenistas) {
-                    tenistasrankingAsync = new TenistasRankingAsyncTask(rhistorico);
-
-
-                    tenistasrankingAsync.execute((Void) null);
-                }
-
-                //   adapter.notifyDataSetChanged();
-
-            }
-            else
-            {
-                if (tenistas!=null) {
-                    tenistas.clear();
-                    adapter.setItem(tenistas);
-                    adapter.notifyDataSetChanged();
-                }
-
-                textView_Data.setText("");
-                textView_Hora.setText("");
-
-            }
-
-        }
 
     }
 
 
+    @Override
+    protected Boolean doInBackground(ArrayList<Desafio>... arrayLists) {
 
-
-
-
-    private class TenistasRankingAsyncTask extends AsyncTask<Void, Integer,ArrayList<Tenista> > {
-
-        private ArrayList<Tenista> temp = null;
-        //private ArrayList<Desafio> tempDesafio = null;
-       // private DatabaseJson json = null;
-        private RankingHistorico rank_temp;
-
-        TenistasRankingAsyncTask (RankingHistorico historico)
-        {
-            rank_temp = historico;
-        }
-
-        @Override
-        protected ArrayList<Tenista> doInBackground(Void... values) {
-
-
-          //  if (ranking!=null || ranking==null) {
-//                publishProgress(10);
-                //Thread.sleep(1000);
-
-                DatabaseJson json = new DatabaseJson();
-                //json.setIP(IP);
-
-               // publishProgress(30);
-                //Thread.sleep(1000);
-  //              Log.i("RANKING","DEPOIS");
-                //ArrayList<Usuario> users = json.getUsersByEmail(mEmail);
-                temp = json.getTenistasByRankingID(rank_temp.getIdRanking());
-
-            //atualiza a posição atual no ranking do usuário
-                int pos=0;
-
-                if (temp!=null) {
-                    for (int x = 0; x < temp.size(); x++)
-                        if (temp.get(x).getUsuario().getEmail().compareToIgnoreCase(email) == 0) {
-                            posicaoUsuario = temp.get(x).getPosicaoAtualRanking();
-
-                            pos = x;
-    //                        Log.i("POSICAO", posicaoUsuario.toString());
-                            break;
-
-                        }
-                }
-
-            //verifica (de acordo com as regras) os jogadores acima do jogador atual que possui jogos marcados
-            //e, portanto, não poderão aceitar desafios
-
-
-            ArrayList<Desafio> tempDesafio = null;
-            for (int x=pos; x>=pos-3; x--) {
-                tempDesafio = json.getJogosByTenista(0,temp.get(x).getIdTenista(),0);
-
-                if (tempDesafio!=null)
-                {
-                    temp.get(x).setTemJogoMarcado(true);
-                }
-                else
-                    temp.get(x).setTemJogoMarcado(false);
-            }
-
-                //publishProgress(60);
-                //Thread.sleep(1000);
-
-                    return temp;
-
-            //}
-
-
-            //return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Tenista> tenistas) {
-            super.onPostExecute(tenistas);
-            if (tenistas!=null) {
-                adapter.setPosicaoUsuario(posicaoUsuario);
-                adapter.setItem(tenistas);
-                adapter.notifyDataSetChanged();
-
-            }
-        }
-
+        return null;
     }
-
-
-
-//popula a variável Categorias com todas as categorias existentes e atualizar o spinner
-    private class CategoriaAsyncTask extends AsyncTask<Void, Integer,ArrayList<Categoria> > {
-
-        private ArrayList<Categoria> temp = null;
-        // private DatabaseJson json = null;
-        private Integer idCategoria=null;
-
-        CategoriaAsyncTask (Integer i)
-        {
-            idCategoria=i;
-        }
-
-        @Override
-        protected ArrayList<Categoria> doInBackground(Void... values) {
-
-
-            //  if (ranking!=null || ranking==null) {
-            publishProgress(10);
-            //Thread.sleep(1000);
-            DatabaseJson json = new DatabaseJson();
-
-           // json.setIP(IP);
-            // publishProgress(30);
-            //Thread.sleep(1000);
-            Log.i("RANKING","DEPOIS");
-            //ArrayList<Usuario> users = json.getUsersByEmail(mEmail);
-            temp = json.getCategorias();
-
-            //publishProgress(60);
-            //Thread.sleep(1000);
-
-            return temp;
-
-            //}
-
-
-            //return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Categoria> cat) {
-            super.onPostExecute(cat);
-            if (cat!=null) {
-                //;
-                categorias = cat;
-                if(nomesCategorias!=null)
-                    nomesCategorias.clear();
-                for (int x=0; x<categorias.size(); x++) {
-                    nomesCategorias.add(categorias.get(x).getNome());
-                    Log.i("CAT",categorias.get(x).getNome());
-                }
-                adapter_spinner.notifyDataSetChanged();
-
-
-            }
-        }
-
-    }
+}
 
 }
 

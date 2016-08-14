@@ -5,27 +5,20 @@ include 'connect.php';
 
 //retorna se o tenista possui algum jogo marcado. Se PORJOGAR =1 então somente jogos não jogados ainda. Se =0, todos os jogos jogados
 //menos os que estão por serem jogados
-if (isset($_GET['idTenistas']) && isset($_GET['PORJOGAR']))
+if (isset($_GET['PORJOGAR']))
 {
-	$idTenistas = $_GET['idTenistas'];
 	$PORJOGAR = $_GET['PORJOGAR'];
 	if ($PORJOGAR)
-		$sql = "select * from Desafio where (TenistaDesafiado='$idTenistas' OR TenistaDesafiador_idTenistas='$idTenistas') AND Jogado=0 AND AceitoDesafiado=1 AND AceitoDesafiador=1 ORDER BY DATA DESC";
+		$sql = "select * from Desafio where Jogado=0 AND AceitoDesafiado=1 AND AceitoDesafiador=1 ORDER BY DATA DESC";
 	else
-		$sql = "select * from Desafio where (TenistaDesafiado='$idTenistas' OR TenistaDesafiador_idTenistas='$idTenistas') AND Jogado=1 ORDER BY DATA DESC";
+		$sql = "select * from Desafio where Jogado=1 ORDER BY DATA DESC";
 //	else if ($PORJOGAR && getdadostenistas)
 //	$sql = "select * from Desafio where (TenistaDesafiado='$idTenistas' OR TenistasDesafiador_idTenistas='$idTenistas') AND Jogado=0 AND AceitoDesafiado=1 AND AceitoDesafiador=1";
 	//	$sql = "";
 }
 
 //retorna todos os jogos do tenista (jogados ou não)
-else if (isset($_GET['idTenistas']))
-{
-	//$idCategoria = $_GET['idCategoria'];
-	$idTenistas = $_GET['idTenistas'];
-	
-	$sql = "select * from Desafio where (TenistaDesafiado='$idTenistas' OR TenistaDesafiador_idTenistas='$idTenistas') ORDER BY DATA DESC";
-}
+
 else 
 	$sql = "select * from Desafio ORDER BY DATA DESC";
 	

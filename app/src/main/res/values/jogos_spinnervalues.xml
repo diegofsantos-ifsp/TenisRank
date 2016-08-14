@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="jogos_spinnervalues">
+
+        <item>Próximos Jogos</item>
+        <item>Jogos Anteriores</item>
+        <item>Todos os Jogos</item>
+
+    </string-array>
+</resources>

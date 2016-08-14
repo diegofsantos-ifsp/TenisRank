@@ -63,9 +63,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mIPServer;
     private View mProgressView;
     private View mLoginFormView;
     private View mImageView;
+    private String IP;
 
 
     @Override
@@ -99,7 +101,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mImageView = findViewById(R.id.imageView);
+        mIPServer = (EditText) findViewById(R.id.ipserver);
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        IP = pref.getString("ip","0");
+
+        mIPServer.setText(IP);
 
     }
 
@@ -156,6 +163,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (mAuthTask != null) {
             return;
         }
+
+
+        if (mIPServer.getText().toString().equalsIgnoreCase("0"))
+            return;
+
+        IP = mIPServer.getText().toString();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("ip",IP);
+        editor.commit();
 
         // Reset errors.
         mEmailView.setError(null);
@@ -349,7 +366,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 //Thread.sleep(1000);
                 DatabaseJson json = new DatabaseJson();
 
-               // json.setIP("192.168.0.15");
+                json.setIP(IP);
 
                 publishProgress(30);
                 //Thread.sleep(1000);

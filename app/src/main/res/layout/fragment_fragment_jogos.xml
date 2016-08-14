@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.santos.diego.tenisrank.FragmentJogos">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:background="@drawable/side_nav_bar"
+           >
+
+
+           <CheckBox
+               android:text="Meus Jogos"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:id="@+id/checkBoxMeusJogos"
+               android:checked="true"
+               android:textColor="#FFFFFF"
+               android:layout_marginLeft="10dp"
+               android:layout_weight="1"
+               android:layout_gravity="left"
+               />
+
+           <Spinner
+               android:layout_width="wrap_content"
+               android:layout_height="fill_parent"
+               android:id="@+id/spinnerJogos"
+               android:layout_marginRight="10dp"
+               android:layout_gravity="right"
+
+               />
+       </LinearLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/swiperefresh_jogos"
+            >
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/listViewJogos" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+</FrameLayout>

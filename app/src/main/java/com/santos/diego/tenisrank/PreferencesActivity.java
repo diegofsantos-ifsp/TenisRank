@@ -2,6 +2,7 @@ package com.santos.diego.tenisrank;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class PreferencesActivity extends Activity {
 
@@ -10,6 +11,8 @@ public class PreferencesActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
+
         getFragmentManager().beginTransaction().replace(android.R.id.content,new PreferencesFragment()).commit();
+
     }
 }

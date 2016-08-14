@@ -10,14 +10,5 @@
             android:key="edit_text_preference_qtd_jogadores"
             android:summary="Quantidade de jogadores que o usuário poderá desafiar" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Servidor">
 
-        <EditTextPreference
-            android:defaultValue="192.168.0.15"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Endereço IP"
-            android:key="edit_text_preference_ip"
-            android:summary="Endereço IP do servidor" />
-    </PreferenceCategory>
 </PreferenceScreen>
