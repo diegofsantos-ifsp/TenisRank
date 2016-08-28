@@ -38,7 +38,7 @@ public class DatabaseJson {
 
     DatabaseJson()
     {
-        IP = "192.168.0.15";
+        IP = "0";
     }
 
 
@@ -216,6 +216,48 @@ public class DatabaseJson {
 
         // Log.v("JSON", json.toString());
         return usuarioArray;
+    }
+
+
+    //insere ou altera Desafio no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereDesafio (int tipo, Desafio f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereDesafio.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("desafio",f.toJson());
+
+
+        JSONObject json = null;
+
+
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+
+
+        if (json==null)
+            return false;
+        try{
+            if (json.getInt("result")==1)
+                return true;
+
+        }catch (org.json.JSONException e)
+        {
+            return false;
+        }
+
+        return false;
     }
 
 

@@ -34,20 +34,24 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
     private ImageButton buttonData;
     private ImageButton buttonTime;
 
+    private int idTenistaDesafiado;
+    private int idTenistaDesafiador;
 
     private EditText dataEdit;
     private EditText horaEdit;
+    private EditText descricao;
 
     private OnCustomDialogDesafioInteractionListener mListener;
 
 
-    public static FragmentJogos newInstance(Integer param1, Integer param2, String param3, String param4) {
-        FragmentJogos fragment = new FragmentJogos();
+    public static CustomDialogDesafioMarcado newInstance(Integer param1, Integer param2, Integer param3, String param4, String param5) {
+        CustomDialogDesafioMarcado fragment = new CustomDialogDesafioMarcado();
         Bundle args = new Bundle();
         args.putInt("idUsuario", param1);
-        args.putInt("idTenista", param2);
-        args.putString("Nome", param3);
-        args.putString("Email", param4);
+        args.putInt("idTenistaDesafiador", param2);
+        args.putInt("idTenistaDesafiado",param3);
+        args.putString("Nome", param4);
+        args.putString("Email", param5);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,7 +75,8 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
 
     public interface OnCustomDialogDesafioInteractionListener {
 
-        void onCustomDialogFragmentInteraction(String Data, String Hora);
+
+        void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado);
     }
 
     //public void onButtonPressed(String Data, String Hora) {
@@ -84,7 +89,8 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            //  idUsuario = getArguments().getInt("idUsuario");
+            idTenistaDesafiador = getArguments().getInt("idTenistaDesafiador");
+            idTenistaDesafiado = getArguments().getInt("idTenistaDesafiado");
             //  idTenista = getArguments().getInt("idTenista");
             // nome = getArguments().getString("Nome");
             // email = getArguments().getString("Email");
@@ -101,6 +107,8 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
         horaEdit = (EditText) rootView.findViewById(R.id.editText_hora_desafio_marcado);
         buttonData = (ImageButton) rootView.findViewById(R.id.imageButton_calendar);
         buttonTime = (ImageButton) rootView.findViewById(R.id.imageButton_time);
+        descricao = (EditText) rootView.findViewById(R.id.editText_descricao);
+
         final String date;
         final String time;
 
@@ -128,7 +136,9 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
 
                     }
                 };
-                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(),myDateListener,2016,8,14);
+                Calendar caltemp = Calendar.getInstance();
+
+                DatePickerDialog pickerDialog = new DatePickerDialog(getActivity(), myDateListener, caltemp.get(Calendar.YEAR), caltemp.get(Calendar.MONTH), caltemp.get(Calendar.DAY_OF_MONTH));
                 pickerDialog.show();
             }
         });
@@ -151,7 +161,9 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
                     }
                 };
 
-                TimePickerDialog timerDialog = new TimePickerDialog(getActivity(),myTimeListener,10,0,true);
+                Calendar caltemp = Calendar.getInstance();
+
+                TimePickerDialog timerDialog = new TimePickerDialog(getActivity(),myTimeListener,caltemp.get(Calendar.HOUR),caltemp.get(Calendar.MINUTE),true);
                 timerDialog.show();
 
             }
@@ -162,7 +174,19 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if (mListener != null) {
-                          mListener.onCustomDialogFragmentInteraction(dataEdit.getText().toString(),horaEdit.getText().toString());
+
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date date = inputFormat.parse(dataEdit.getText().toString());
+                            String result = outputFormat.format(date);
+                            mListener.onCustomDialogFragmentInteraction(result,horaEdit.getText().toString(),descricao.getText().toString(),idTenistaDesafiador,idTenistaDesafiado);
+                        }catch (java.text.ParseException e)
+                        {
+
+                        }
+
+                        getDialog().dismiss();
                       }
             }
         });

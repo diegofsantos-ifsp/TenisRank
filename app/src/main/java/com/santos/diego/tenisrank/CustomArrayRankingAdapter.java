@@ -32,6 +32,9 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     private String nome;
     private String email;
 
+
+    private boolean usuario_pode_marcar_jogo=true;
+
     //private final String[] values=null;
     private LayoutInflater inflater = null;
 
@@ -69,6 +72,16 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     {
         idUsuario = id;
     }
+
+
+    public boolean getUsuario_pode_marcar_jogo() {
+        return usuario_pode_marcar_jogo;
+    }
+
+    public void setUsuario_pode_marcar_jogo(boolean usuario_pode_marcar_jogo) {
+        this.usuario_pode_marcar_jogo = usuario_pode_marcar_jogo;
+    }
+
 
     @Override
     public Tenista getItem(int position) {
@@ -123,10 +136,15 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
             viewHolder.imgButton2.setVisibility(View.GONE);
 
             if (posicao!=null) {
-                int diferenca = (posicao-1) - position;
-                if ( (diferenca >= 1 && diferenca<=3) && (!item.getTemJogoMarcado())) //3 posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
+
+
+
+            if (usuario_pode_marcar_jogo) {
+
+                int diferenca = (posicao - 1) - position;
+                if ((diferenca >= 1 && diferenca <= 3) && (!item.getTemJogoMarcado())) //3 posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
                 {
-                  //  convertView.setBackgroundColor(Color.parseColor("#FFFFE7B3"));
+                    //  convertView.setBackgroundColor(Color.parseColor("#FFFFE7B3"));
                     //viewHolder.imgView.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.tennis_icon_32));
                     viewHolder.imgView.setVisibility(View.VISIBLE);
                     viewHolder.imgView.setFocusable(false);
@@ -168,24 +186,28 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(Intent.ACTION_DIAL);
-                            intent.setData(Uri.parse("tel:"+item.getUsuario().getTelefone()));
+                            intent.setData(Uri.parse("tel:" + item.getUsuario().getTelefone()));
                             try {
                                 SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
                                 SharedPreferences.Editor editor = pref.edit();
-                                editor.putBoolean("ligou",true);
-                                editor.putString("nome_jogador_desafiado",item.getUsuario().getNome());
+                                editor.putBoolean("ligou", true);
+                                editor.putString("nome_jogador_desafiado", item.getUsuario().getNome());
+                                Log.i("TENISTA", item.getIdTenista().toString());
+                                //editor.putInt("idTenistaDesafiado",item.getIdTenista());
+                                editor.putInt("idTenistaDesafiado", item.getIdTenista());
                                 editor.commit();
 
                                 context.startActivity(intent);
 
 
-                            }catch (SecurityException e){
-                                Log.i("Excecao","ENTROU");
+                            } catch (SecurityException e) {
+                                Log.i("Excecao", "ENTROU");
                                 e.printStackTrace();
                             }
                         }
                     });
                 }
+            }
             }
 
         }

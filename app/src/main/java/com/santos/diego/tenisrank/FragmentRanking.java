@@ -1,10 +1,15 @@
 package com.santos.diego.tenisrank;
 
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +22,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -58,8 +66,15 @@ public class FragmentRanking extends Fragment {
     private Spinner spinner = null;
     private TextView textView_Data = null;
     private TextView textView_Hora = null;
+    private String IP;
+
+    //armazena os dados do próximo jogo do tenista desafiado (com o desafiador), se existir
+    private Tenista desafiado = null;
+    private Tenista desafiador = null;
 
     private ListView lv = null;
+
+    private Boolean precisaColocarResultado=false;
 
 
     public FragmentRanking() {
@@ -96,6 +111,18 @@ public class FragmentRanking extends Fragment {
         }
     }
 
+/*
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        Log.i("RESUME","ATIVADO");
+        if (categorias!=null && !categorias.isEmpty()) {
+            RankingAsyncTask rasync = new RankingAsyncTask(0, categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+            rasync.execute((Void) null);
+        }
+    }
+*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -105,6 +132,9 @@ public class FragmentRanking extends Fragment {
         spinner = (Spinner) view.findViewById(R.id.spinner_nav);
         textView_Data = (TextView) view.findViewById(R.id.textview_data);
         textView_Hora = (TextView) view.findViewById(R.id.textview_hora);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        IP = pref.getString("ip","0");
 
 
         Bundle args = getArguments();
@@ -231,7 +261,7 @@ public class FragmentRanking extends Fragment {
             //Thread.sleep(1000);
             DatabaseJson json = new DatabaseJson();
 
-            //json.setIP(IP);
+            json.setIP(IP);
             // publishProgress(30);
             //Thread.sleep(1000);
 
@@ -247,37 +277,149 @@ public class FragmentRanking extends Fragment {
 
                 des = json.getJogosByTenista(0, idTenista, 1);
 
+
+
                 if (des!=null) {
+
+
                     //  Log.i("TENISTA_ID",idTenista.toString());
                     //Log.i("TENISTA",des.get(0).getData());
-                    final Tenista desafiado = des.get(0).getTenistaDesafiado();
-                    final Tenista desafiador = des.get(0).getTenistaDesafiador();
+                    desafiado = des.get(0).getTenistaDesafiado();
+                    desafiador = des.get(0).getTenistaDesafiador();
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String strDesafiado;
-                            String strDesafiador;
 
-                            strDesafiado = desafiado.getUsuario().getNome();
-                            strDesafiador = desafiador.getUsuario().getNome();
+                    //verifica se existe jogo anterior sem resultado e obriga o usuário a
+                    //digitar o resultado
+                    String tempData = des.get(0).getData();
+                    String tempHora = des.get(0).getHora();
 
-                            strDesafiado=strDesafiado.substring(0,strDesafiado.indexOf(" "));
-                            strDesafiador=strDesafiador.substring(0,strDesafiador.indexOf(" "));
+                    String tempDataHora = tempData + " " + tempHora;
 
-                            textViewDesafiador.setText(strDesafiador);
-                            textViewDesafiado.setText(strDesafiado);
-                            data.setText(des.get(0).getData());
-                            hora.setText(des.get(0).getHora());
-                            linearLayout.setVisibility(View.VISIBLE);
+                    Date dataJogo = null;
 
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    try {
+                        dataJogo = inputFormat.parse(tempDataHora);
+
+                        Date dataAtual = new Date();
+
+                        if (dataJogo.compareTo(dataAtual)<0)
+                        {
+                            precisaColocarResultado = true;
 
                         }
-                    });
+                        else
+                            precisaColocarResultado = false;
 
-                    //  Log.i("TENISTADESAFIADO", desafiado.getUsuario().getNome());
-                    //Log.i("TENISTADESAFIADOR",desafiador.getUsuario().getNome());
-                    // Log.i("TENISTADESAFIADOR", desafiador.getUsuario().getNome());
+                    }catch(java.text.ParseException e)
+                    {
+                        precisaColocarResultado = false;
+                    }
+
+                    //se existir jogo a ser jogado, este será mostrado na tela de Ranking
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (!precisaColocarResultado) {
+
+                                    String strDesafiado;
+                                    String strDesafiador;
+
+                                    strDesafiado = desafiado.getUsuario().getNome();
+                                    strDesafiador = desafiador.getUsuario().getNome();
+
+                                    int indexDesafiado = strDesafiado.indexOf(" ");
+                                    if (indexDesafiado > 0)
+                                        strDesafiado = strDesafiado.substring(0, indexDesafiado);
+
+                                    int indexDesafiador = strDesafiador.indexOf(" ");
+
+                                    if (indexDesafiador > 0)
+                                        strDesafiador = strDesafiador.substring(0, indexDesafiador);
+
+
+                                    textViewDesafiador.setText(strDesafiador);
+                                    textViewDesafiado.setText(strDesafiado);
+                                    String tempData = des.get(0).getData();
+
+                                    //mostra o próximo jogo do usuário
+                                    SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                    try {
+                                        Date date = inputFormat.parse(des.get(0).getData());
+                                        tempData = outputFormat.format(date);
+                                        data.setText(tempData);
+                                        hora.setText(des.get(0).getHora());
+                                        linearLayout.setVisibility(View.VISIBLE);
+
+                                    } catch (java.text.ParseException e) {
+                                        linearLayout.setVisibility(View.GONE);
+
+                                    }
+
+                                }
+                                else //se precisa colocar resultado
+                                {
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                                    builder1.setTitle("Envio de Resultado");
+                                    builder1.setMessage("Você jogou uma partida de tênis e não enviou o resultado final.\n " +
+                                            "\nObs: Você só conseguirá marcar novos desafios caso o resultado final seja enviado." +
+                                            "\n\nDeseja enviar agora?");
+                                    builder1.setCancelable(true);
+                                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                                   // final int idTenistaDesafiado = pref.getInt("idTenistaDesafiado",0);
+
+                                    builder1.setPositiveButton(
+                                            "Sim",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                  //  dialog.cancel();
+                                                    //CustomDialogMarcarResultado marcarResultado = CustomDialogMarcarResultado.newInstance(2,3,4,"","");
+                                                    //FragmentManager fragmentManager = getFragmentManager();
+                                                    CustomDialogMarcarResultado marcarResultado = new CustomDialogMarcarResultado();
+                                                    FragmentManager fragMarcarResultado = getActivity().getSupportFragmentManager();
+                                                    //marcarResultado.setIdTenistaDesafiador(desafiador.getIdTenista());
+                                                    //marcarResultado.setIdTenistaDesafiado(desafiado.getIdTenista());
+                                                    marcarResultado.setDesafio(des.get(0));
+                                                    //marcarResultado.setIdDesafio(des.get(0).getIdDesafio());
+                                                    marcarResultado.show(fragMarcarResultado,"marcarResultadoDialog");
+                                                /*
+                                                    if (idTenistaDesafiado>0) {
+                                                        CustomDialogDesafioMarcado customDialogDesafio = CustomDialogDesafioMarcado.newInstance(idUsuario,idTenista,idTenistaDesafiado,nome,email);
+                                                        FragmentManager fragmentManager = getSupportFragmentManager();
+                                                        //fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+
+                                                        // FragmentManager fm = getSupportFragmentManager();
+                                                        //CustomDialogDesafioMarcado dialogcustom = new CustomDialogDesafioMarcado();
+                                                        customDialogDesafio.show(fragmentManager, "customdialog");
+                                                    }
+                                                    */
+
+                                                }
+                                            });
+
+                                    builder1.setNegativeButton(
+                                            "Não",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int id) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+
+                                    AlertDialog alert11 = builder1.create();
+                                    alert11.show();
+
+                                }
+                            }
+                        });
+
+                        //  Log.i("TENISTADESAFIADO", desafiado.getUsuario().getNome());
+                        //Log.i("TENISTADESAFIADOR",desafiador.getUsuario().getNome());
+                        // Log.i("TENISTADESAFIADOR", desafiador.getUsuario().getNome());
+
                 }
             }
 
@@ -309,7 +451,19 @@ public class FragmentRanking extends Fragment {
                 final RankingHistorico rhistorico = ranking.get(0);
 
                 // toolbar.setSubtitle("Gerado em: "+rhistorico.getData()+" as " + rhistorico.getHora());
-                textView_Data.setText(rhistorico.getData());
+                String tempData = null;
+                SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                try {
+                    Date date = inputFormat.parse(rhistorico.getData());
+                    tempData = outputFormat.format(date);
+
+                }catch (java.text.ParseException e)
+                {
+
+                }
+
+                textView_Data.setText(tempData);
                 textView_Hora.setText(rhistorico.getHora());
 
                 if (updateTenistas) {
@@ -365,7 +519,7 @@ public class FragmentRanking extends Fragment {
             //Thread.sleep(1000);
 
             DatabaseJson json = new DatabaseJson();
-            //json.setIP(IP);
+            json.setIP(IP);
 
             // publishProgress(30);
             //Thread.sleep(1000);
@@ -382,6 +536,7 @@ public class FragmentRanking extends Fragment {
                         posicaoUsuario = temp.get(x).getPosicaoAtualRanking();
 
                         pos = x;
+
                         //                        Log.i("POSICAO", posicaoUsuario.toString());
                         break;
 
@@ -402,6 +557,12 @@ public class FragmentRanking extends Fragment {
                 }
                 else
                     temp.get(x).setTemJogoMarcado(false);
+
+                //usuario atual
+                if (x==pos) {
+                    adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
+                    //adapter.notifyDataSetChanged();
+                }
             }
 
             //publishProgress(60);
@@ -464,10 +625,10 @@ public class FragmentRanking extends Fragment {
             //Thread.sleep(1000);
             DatabaseJson json = new DatabaseJson();
 
-            // json.setIP(IP);
+             json.setIP(IP);
             // publishProgress(30);
             //Thread.sleep(1000);
-            Log.i("RANKING","DEPOIS");
+        //    Log.i("RANKING","DEPOIS");
             //ArrayList<Usuario> users = json.getUsersByEmail(mEmail);
             temp = json.getCategorias();
 
@@ -498,7 +659,7 @@ public class FragmentRanking extends Fragment {
                     nomesCategorias.clear();
                 for (int x=0; x<categorias.size(); x++) {
                     nomesCategorias.add(categorias.get(x).getNome());
-                    Log.i("CAT",categorias.get(x).getNome());
+      //              Log.i("CAT",categorias.get(x).getNome());
                 }
                 adapter_spinner.notifyDataSetChanged();
 

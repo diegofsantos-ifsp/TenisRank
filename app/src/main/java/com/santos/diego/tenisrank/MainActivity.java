@@ -10,6 +10,7 @@ android:centerColor="#4CAF50"
         android:type="linear" />
  */
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -41,12 +43,14 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.santos.diego.tenisrank.CustomDialogDesafioMarcado.OnCustomDialogDesafioInteractionListener;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FragmentJogos.OnFragmentInteractionListener, CustomDialogDesafioMarcado.OnCustomDialogDesafioInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentJogos.OnFragmentInteractionListener, OnCustomDialogDesafioInteractionListener,CustomDialogMarcarResultado.OnCustomDialogMarcarResultadoListener{
 
     private String nome = null;
     private String email = null;
@@ -69,8 +73,11 @@ public class MainActivity extends AppCompatActivity
     private Spinner spinner = null;
     private TextView textView_Data = null;
     private TextView textView_Hora = null;
+    ProgressDialog progressDialog = null;
 
     private ListView lv = null;
+
+    private String IP = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,6 +245,8 @@ public class MainActivity extends AppCompatActivity
   //      SharedPreferences.Editor editor = pref.edit();
     //    editor.putBoolean("ligou",false);
       //  editor.commit();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        IP = pref.getString("ip","0");
 
 
 
@@ -249,14 +258,24 @@ public class MainActivity extends AppCompatActivity
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage(Msg);
         builder1.setCancelable(true);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final int idTenistaDesafiado = pref.getInt("idTenistaDesafiado",0);
 
         builder1.setPositiveButton(
                 "Sim",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        FragmentManager fm = getSupportFragmentManager();
-                        CustomDialogDesafioMarcado dialogcustom = new CustomDialogDesafioMarcado();
-                        dialogcustom.show(fm,"customdialog");
+
+                        if (idTenistaDesafiado>0) {
+                           CustomDialogDesafioMarcado customDialogDesafio = CustomDialogDesafioMarcado.newInstance(idUsuario,idTenista,idTenistaDesafiado,nome,email);
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            //fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+
+                           // FragmentManager fm = getSupportFragmentManager();
+                            //CustomDialogDesafioMarcado dialogcustom = new CustomDialogDesafioMarcado();
+                            customDialogDesafio.show(fragmentManager, "customdialog");
+                        }
 
                     }
                 });
@@ -282,6 +301,10 @@ public class MainActivity extends AppCompatActivity
 
 
 
+    //caso o usuário tenha ligado para um jogador para marcar um desafio, essa verificação é feita
+    //toda vez que o aplicativo volta a ser executado. A possibilidade de ligação é feita através
+    // do arquivo CustomArrayRankingAdapter que armazena o id do TenistaDesafiado
+
     @Override
     public void onResume()
     {
@@ -290,6 +313,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean ligou = pref.getBoolean("ligou",false);
         String jogador = pref.getString("nome_jogador_desafiado",null);
+
         String msg = new String();
 
 
@@ -305,10 +329,18 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("ligou",false);
             editor.putString("nome_jogador_desafiado",null);
+            editor.putString("idTenistaDesafiado",null);
             editor.commit();
+
 
         }
 
+
+
+
+
+        //FragmentTransaction f = getSupportFragmentManager().beginTransaction();
+        //f.detach()
 
     }
 
@@ -357,16 +389,17 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_jogos) {
-            Fragment fragment = FragmentJogos.newInstance(idUsuario,idTenista,nome,email);
+            FragmentJogos fragment = FragmentJogos.newInstance(idUsuario,idTenista,nome,email);
             FragmentManager fragmentManager = this.getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
             this.setTitle("Jogos");
 
 
         } else if (id == R.id.nav_ranking) {
-            Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+            FragmentRanking fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
             FragmentManager fragmentManager = this.getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"RankingFragment").commit();
             this.setTitle("Ranking");
 
         } else if (id == R.id.nav_slideshow) {
@@ -385,25 +418,69 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    //Do Fragmento FragmentJogos
     @Override
     public void onFragmentInteraction(Uri uri) {
 
     }
 
+
+    //Do Fragmento CustomDialogDesafioMarcado
     @Override
-    public void onCustomDialogFragmentInteraction(String Data, String Hora) {
-        Log.i("BUTTON","PRESSED");
-        Log.i("BUTTON",Data);
-        Log.i("BUTTON",Hora);
+    public void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado) {
+
+        Desafio t = new Desafio();
+
+        t.setIdQuadra(1);
+        t.setIdTenistaDesafiado(idTenistaDesafiado);
+        t.setIdTenistaDesafiador(idTenistaDesafiador);
+        t.setGanhador(0);
+        t.setAceitoDesafiado(1);
+        t.setAceitoDesafiador(1);
+        t.setConfirmadoCoordenador(0);
+        t.setConfirmadoDesafiado(0);
+        t.setConfirmadoDesafiador(0);
+        t.setData(Data);
+        t.setHora(Hora);
+        t.setJogado(0);
+        t.setDescricao(Descricao);
+
+        InsertDesafioAsyncTask insDesAsyncTask = new InsertDesafioAsyncTask();
+        insDesAsyncTask.execute(t);
+    }
+
+    @Override
+    public void onCustomDialogMarcarResultadoOKClicked(Desafio d) {
+
+        InsertDesafioAsyncTask insertDesafioAsyncTask = new InsertDesafioAsyncTask();
+        Log.i("IDDESAFIOS",String.valueOf(d.getIdDesafio()));
+        insertDesafioAsyncTask.setInsere(false);
+        insertDesafioAsyncTask.execute(d);
+    }
+
+    //insere os desfios e atualiza os dados do fragmento do Ranking com o novo jogo
+private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolean>
+{
+    //se insere = false então o banco atualizará os dados ao invés de inserir
+    private boolean insere = true;
+
+    public boolean isInsere() {
+        return insere;
+    }
+
+    public void setInsere(boolean insere) {
+        this.insere = insere;
     }
 
 
-private class InsertDesafio extends AsyncTask <ArrayList<Desafio>, Integer, Boolean>
-{
+
     @Override
     protected void onPreExecute()
     {
         super.onPreExecute();
+      //  progressDialog = new ProgressDialog(getApplicationContext());
+      //  progressDialog.setMessage("Marcando desafio, aguarde...");
+      //  progressDialog.show();
     }
 
     @Override
@@ -411,14 +488,46 @@ private class InsertDesafio extends AsyncTask <ArrayList<Desafio>, Integer, Bool
     {
         super.onPostExecute(b);
 
+        //atualiza o fragmento do Ranking (com os novos dados gerados)
+        if (MainActivity.this.getTitle().toString().contains("Ranking")) {
+            Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+            FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"RankingFragment").commit();
+
+
+        }
+        //progressDialog.dismiss();
 
     }
 
 
     @Override
-    protected Boolean doInBackground(ArrayList<Desafio>... arrayLists) {
+    protected Boolean doInBackground(Desafio... arrayLists) {
 
-        return null;
+        DatabaseJson json = new DatabaseJson();
+        Integer result = 0;
+
+
+        json.setIP(IP);
+        if (insere) {
+            if (!json.insereDesafio(1, arrayLists[0]))
+                Log.i("DESAFIO", "ERRO");
+            else
+                Log.i("DESAFIO", "SEMERRO");
+        }
+        else
+        {
+            if (!json.insereDesafio(2, arrayLists[0]))
+                Log.i("DESAFIO", "ERRO");
+            else
+                Log.i("DESAFIO", "SEMERRO");
+        }
+
+
+
+
+        return true;
     }
 }
 

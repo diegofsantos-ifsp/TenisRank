@@ -58,6 +58,7 @@ public class JSONParser {
                     }
                     sbParams.append(key).append("=")
                             .append(URLEncoder.encode(params.get(key), charset));
+                    //sbParams.append(key).append("=").append(params.get(key));
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -85,8 +86,10 @@ public class JSONParser {
 
                 conn.connect();
 
+                Log.i("PARAMS","ANTES DE CONVERTER PARA STRING");
                 paramsString = sbParams.toString();
-
+                Log.i("PARAMS","DEPOIS DE CONVERTER PARA STRING");
+                Log.i("PARAMS",paramsString);
                 wr = new DataOutputStream(conn.getOutputStream());
                 wr.writeBytes(paramsString);
                 wr.flush();
@@ -157,8 +160,11 @@ public class JSONParser {
         // try parse the string to a JSON object
         if (!error) {
             try {
-                if (result != null)
+                if (result != null) {
+                    Log.i("RESULT",result.toString());
                     jObj = new JSONObject(result.toString());
+
+                }
                 // Log.i("OBJ",result.toString());
             } catch (JSONException e) {
                 errorcode = 2;

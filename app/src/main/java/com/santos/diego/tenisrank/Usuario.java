@@ -1,12 +1,17 @@
 package com.santos.diego.tenisrank;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
  * Created by Diego on 07/03/2016.
  */
 public class Usuario {
-    private int id;
+    private int id=-1;
 
     public int getId() {
         return id;
@@ -64,11 +69,11 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public Date getDataultimoacesso() {
+    public String getDataultimoacesso() {
         return dataultimoacesso;
     }
 
-    public void setDataultimoacesso(Date dataultimoacesso) {
+    public void setDataultimoacesso(String dataultimoacesso) {
         this.dataultimoacesso = dataultimoacesso;
     }
 
@@ -80,23 +85,54 @@ public class Usuario {
         this.horaultimoacesso = horaultimoacesso;
     }
 
-    public boolean isCadastrovalido() {
+    public int isCadastrovalido() {
         return cadastrovalido;
     }
 
-    public void setCadastrovalido(boolean cadastrovalido) {
+    public void setCadastrovalido(int cadastrovalido) {
         this.cadastrovalido = cadastrovalido;
     }
 
-    private String nome;
-    private String endereco;
-    private String telefone;
-    private String email;
-    private String nomeusuario;
-    private String senha;
-    private Date dataultimoacesso;
-    private String horaultimoacesso;
-    private boolean cadastrovalido;
+    public String toJson()
+    {
+
+
+        JSONObject json = new JSONObject();
+
+        try{
+            json.put("idUsuarios",this.getId());
+            json.put("Nome",this.getNome());
+            json.put("Endereco",this.getEndereco());
+            json.put("Telefone",this.getTelefone());
+            json.put("Email",this.getEmail());
+            json.put("NomeUsuario",this.getNomeusuario());
+            json.put("Senha",this.getSenha());
+            json.put("DataUltimoAcesso",this.getDataultimoacesso());
+            json.put("HoraUltimoAcesso",this.getHoraultimoacesso());
+            json.put("CadastroValido",this.isCadastrovalido());
+
+            Log.i("JSONSTRING_USUARIO",json.toString());
+            return json.toString();
+
+
+
+        }catch (JSONException e)
+        {
+            return null;
+        }
+
+
+    }
+
+    private String nome=" ";
+    private String endereco=" ";
+    private String telefone=" ";
+    private String email=" ";
+    private String nomeusuario=" ";
+    private String senha=" ";
+    private String dataultimoacesso=" ";
+    private String horaultimoacesso=" ";
+    private int cadastrovalido=0;
 
 
 }

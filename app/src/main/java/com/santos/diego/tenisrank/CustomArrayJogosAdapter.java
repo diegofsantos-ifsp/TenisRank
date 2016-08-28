@@ -123,72 +123,74 @@ public class CustomArrayJogosAdapter extends ArrayAdapter<Desafio> {
             String set2=null;
             String set3=null;
 
-            if (item.isJogado()!=0)
-            {
-                StringBuilder temp = new StringBuilder();
+            //se o jogo já possui resultados, apresenta os resultados de todos os sets
+            if (item.isJogado()!=0) {
 
-                //set 1
-                temp.append(item.getResultTenistaDesafiador1());
-                temp.append(" x ");
-                temp.append(item.getResultTenistaDesafiado1());
+                if (item.getWO() > 0) {
+                    set1 = "WO";
+                } else {
 
-                if (item.getTieBreakDesafiador1()!=-1)
-                {
-                    temp.append(" (");
-                    temp.append(item.getTieBreakDesafiador1());
-                    temp.append(" | ");
-                    temp.append(item.getTieBreakDesafiado1());
-                    temp.append(")");
-                }
 
-                set1 = temp.toString();
+                    StringBuilder temp = new StringBuilder();
 
-                temp.delete(0,temp.length());
-
-                //set 2
-                if (item.getResultTenistaDesafiador2()!=-1)
-                {
-                    temp.append(item.getResultTenistaDesafiador2());
+                    //set 1
+                    temp.append(item.getResultTenistaDesafiador1());
                     temp.append(" x ");
-                    temp.append(item.getResultTenistaDesafiado2());
+                    temp.append(item.getResultTenistaDesafiado1());
 
-                    if (item.getTieBreakDesafiador2()!=-1)
-                    {
+                    if (item.getTieBreakDesafiador1() != -1) {
                         temp.append(" (");
-                        temp.append(item.getTieBreakDesafiador2());
+                        temp.append(item.getTieBreakDesafiador1());
                         temp.append(" | ");
-                        temp.append(item.getTieBreakDesafiado2());
+                        temp.append(item.getTieBreakDesafiado1());
                         temp.append(")");
                     }
 
-                    set2 = temp.toString();
+                    set1 = temp.toString();
 
-                    temp.delete(0,temp.length());
+                    temp.delete(0, temp.length());
 
-                }
+                    //set 2
+                    if (item.getResultTenistaDesafiador2() != -1) {
+                        temp.append(item.getResultTenistaDesafiador2());
+                        temp.append(" x ");
+                        temp.append(item.getResultTenistaDesafiado2());
 
-                //set 3
-                if (item.getResultTenistaDesafiador3()!=-1)
-                {
-                    temp.append(item.getResultTenistaDesafiador3());
-                    temp.append(" x ");
-                    temp.append(item.getResultTenistaDesafiado3());
+                        if (item.getTieBreakDesafiador2() != -1) {
+                            temp.append(" (");
+                            temp.append(item.getTieBreakDesafiador2());
+                            temp.append(" | ");
+                            temp.append(item.getTieBreakDesafiado2());
+                            temp.append(")");
+                        }
 
-                    if (item.getTieBreakDesafiador3()!=-1)
-                    {
-                        temp.append(" (");
-                        temp.append(item.getTieBreakDesafiador3());
-                        temp.append(" | ");
-                        temp.append(item.getTieBreakDesafiado3());
-                        temp.append(")");
+                        set2 = temp.toString();
+
+                        temp.delete(0, temp.length());
+
                     }
 
-                    set3 = temp.toString();
+                    //set 3
+                    if (item.getResultTenistaDesafiador3() != -1) {
+                        temp.append(item.getResultTenistaDesafiador3());
+                        temp.append(" x ");
+                        temp.append(item.getResultTenistaDesafiado3());
 
-                    temp.delete(0,temp.length());
+                        if (item.getTieBreakDesafiador3() != -1) {
+                            temp.append(" (");
+                            temp.append(item.getTieBreakDesafiador3());
+                            temp.append(" | ");
+                            temp.append(item.getTieBreakDesafiado3());
+                            temp.append(")");
+                        }
+
+                        set3 = temp.toString();
+
+                        temp.delete(0, temp.length());
+
+                    }
 
                 }
-
             }
 
 

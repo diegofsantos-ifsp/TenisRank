@@ -1,9 +1,11 @@
 package com.santos.diego.tenisrank;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -58,6 +60,8 @@ public class FragmentJogos extends Fragment {
     private Integer idTenista = null;
     private Integer idCoordenador = null;
 
+    private String IP = null;
+
     public FragmentJogos() {
         // Required empty public constructor
     }
@@ -106,6 +110,9 @@ public class FragmentJogos extends Fragment {
         adapter_spinner = ArrayAdapter.createFromResource(getActivity(),R.array.jogos_spinnervalues,R.layout.spinner_item);
         adapter_spinner.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter_spinner);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        IP = pref.getString("ip","0");
 
 
         lv = (ListView) view.findViewById(R.id.listViewJogos);
@@ -298,7 +305,8 @@ public class FragmentJogos extends Fragment {
 
             }
             else {
-                desafios.clear();
+                if (desafios!=null)
+                    desafios.clear();
                 desafios = null;
 
             }
@@ -309,7 +317,7 @@ public class FragmentJogos extends Fragment {
         protected ArrayList<Desafio> doInBackground(Void... values) {
 
             DatabaseJson json = new DatabaseJson();
-
+            json.setIP(IP);
 
             if (meusjogos)
                 desafiosTemp = json.getJogosByTenista(jogos,idTenista,1);

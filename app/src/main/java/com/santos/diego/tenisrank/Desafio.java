@@ -1,40 +1,94 @@
 package com.santos.diego.tenisrank;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Diego on 19/04/2016.
  */
 public class Desafio {
     private int idDesafio;
-    private Integer idTenistaDesafiado;
-    private Integer idTenistaDesafiador;
-    private int idQuadra;
+    private Integer idTenistaDesafiado=0;
+    private Integer idTenistaDesafiador=0;
+    private int idQuadra=0;
 
-    private int ganhador;
+
+    private int DesafiadorPontosSeGanhar=0;
+    private int DesafiadorPontosSePerder=0;
+    private int DesafiadoPontosSeGanhar=0;
+    private int DesafiadoPontosSePerder=0;
+
+    private int EstaNoRanking=0;
+
+    private int ganhador=0;
     private String Data;
     private String Hora;
-    int jogado;
-    int AceitoDesafiado;
-    int AceitoDesafiador;
-    private String Descricao;
-    private short ResultTenistaDesafiado1;
-    private short ResultTenistaDesafiador1;
-    private short tieBreakDesafiado1;
-    private short tieBreakDesafiador1;
+
+    int jogado=0;
+    int AceitoDesafiado=0;
+    int AceitoDesafiador=0;
+    private String Descricao="";
+    private short ResultTenistaDesafiado1=-1;
+    private short ResultTenistaDesafiador1=-1;
+    private short tieBreakDesafiado1=-1;
+    private short tieBreakDesafiador1=-1;
     private Tenista tenistaDesafiado;
     private Tenista tenistaDesafiador;
 
-    private short ResultTenistaDesafiado2;
-    private short ResultTenistaDesafiador2;
-    private short tieBreakDesafiado2;
-    private short tieBreakDesafiador2;
-    private short ResultTenistaDesafiado3;
-    private short ResultTenistaDesafiador3;
-    private short tieBreakDesafiado3;
-    private short tieBreakDesafiador3;
-    private short WO;
-    int confirmadoCoordenador;
-    int confirmadoDesafiado;
-    int confirmadoDesafiador;
+    private short ResultTenistaDesafiado2=-1;
+    private short ResultTenistaDesafiador2=-1;
+    private short tieBreakDesafiado2=-1;
+    private short tieBreakDesafiador2=-1;
+    private short ResultTenistaDesafiado3=-1;
+    private short ResultTenistaDesafiador3=-1;
+    private short tieBreakDesafiado3=-1;
+    private short tieBreakDesafiador3=-1;
+    private short WO=0;
+    int confirmadoCoordenador=0;
+    int confirmadoDesafiado=0;
+    int confirmadoDesafiador=0;
+
+    public int getDesafiadorPontosSeGanhar() {
+        return DesafiadorPontosSeGanhar;
+    }
+
+    public void setDesafiadorPontosSeGanhar(int desafiadorPontosSeGanhar) {
+        DesafiadorPontosSeGanhar = desafiadorPontosSeGanhar;
+    }
+
+    public int getDesafiadorPontosSePerder() {
+        return DesafiadorPontosSePerder;
+    }
+
+    public void setDesafiadorPontosSePerder(int desafiadorPontosSePerder) {
+        DesafiadorPontosSePerder = desafiadorPontosSePerder;
+    }
+
+    public int getDesafiadoPontosSeGanhar() {
+        return DesafiadoPontosSeGanhar;
+    }
+
+    public void setDesafiadoPontosSeGanhar(int desafiadoPontosSeGanhar) {
+        DesafiadoPontosSeGanhar = desafiadoPontosSeGanhar;
+    }
+
+    public int getDesafiadoPontosSePerder() {
+        return DesafiadoPontosSePerder;
+    }
+
+    public void setDesafiadoPontosSePerder(int desafiadoPontosSePerder) {
+        DesafiadoPontosSePerder = desafiadoPontosSePerder;
+    }
+
+    public int getEstaNoRanking() {
+        return EstaNoRanking;
+    }
+
+    public void setEstaNoRanking(int estaNoRanking) {
+        EstaNoRanking = estaNoRanking;
+    }
 
     public int getGanhador() {
         return ganhador;
@@ -269,5 +323,57 @@ public class Desafio {
 
     public void setTenistaDesafiador(Tenista tenistaDesafiador) {
         this.tenistaDesafiador = tenistaDesafiador;
+    }
+
+    public String toJson()
+    {
+
+
+        JSONObject json = new JSONObject();
+
+        try{
+            json.put("idDesafio",this.getIdDesafio());
+            json.put("idTenistaDesafiado",this.getIdTenistaDesafiado());
+            json.put("idTenistaDesafiador",this.getIdTenistaDesafiador());
+            json.put("idQuadra",this.getIdQuadra());
+            json.put("Ganhador",this.getGanhador());
+            json.put("Data",this.getData());
+            json.put("Hora",this.getHora());
+            json.put("Jogado",this.isJogado());
+            json.put("AceitoDesafiado",this.isAceitoDesafiado());
+            json.put("AceitoDesafiador",this.isAceitoDesafiador());
+            json.put("Descricao",this.getDescricao());
+            json.put("ResultTenistaDesafiado1",this.getResultTenistaDesafiado1());
+            json.put("ResultTenistaDesafiador1",this.getResultTenistaDesafiador1());
+            json.put("ResultTenistaDesafiado2",this.getResultTenistaDesafiado2());
+            json.put("ResultTenistaDesafiador2",this.getResultTenistaDesafiador2());
+            json.put("ResultTenistaDesafiado3",this.getResultTenistaDesafiado3());
+            json.put("ResultTenistaDesafiador3",this.getResultTenistaDesafiador3());
+            json.put("tieBreakDesafiado1",this.getTieBreakDesafiado1());
+            json.put("tieBreakDesafiador1",this.getTieBreakDesafiador1());
+            json.put("tieBreakDesafiado2",this.getTieBreakDesafiado2());
+            json.put("tieBreakDesafiador2",this.getTieBreakDesafiador2());
+            json.put("tieBreakDesafiado3",this.getTieBreakDesafiado3());
+            json.put("tieBreakDesafiador3",this.getTieBreakDesafiador3());
+            json.put("WO",this.getWO());
+            json.put("ConfirmadoCoordenador",this.isConfirmadoCoordenador());
+            json.put("ConfirmadoDesafiado",this.isConfirmadoDesafiado());
+            json.put("ConfirmadoDesafiador",this.isConfirmadoDesafiador());
+            json.put("DesafiadorPontosSeGanhar",this.getDesafiadorPontosSeGanhar());
+            json.put("DesafiadorPontosSePerder",this.getDesafiadorPontosSePerder());
+            json.put("DesafiadoPontosSeGanhar",this.getDesafiadoPontosSeGanhar());
+            json.put("DesafiadoPontosSePerder",this.getDesafiadoPontosSePerder());
+            json.put("EstaNoRanking",this.getEstaNoRanking());
+            Log.i("JSONSTRING",json.toString());
+            return json.toString();
+
+
+
+        }catch (JSONException e)
+        {
+            return null;
+        }
+
+
     }
 }
