@@ -34,7 +34,24 @@ public class DatabaseJson {
     JSONArray tenistasJson = null;
 
 
-    String error;
+    //se erro=0 (não tem erro)
+    //se erro=1 (erro de conexão)
+    //se erro=2 (erro no Json)
+    Integer error;
+
+
+    //retorna o resultado das consultas
+    Integer result=0;
+
+
+    public Integer getResult() {
+        return result;
+    }
+
+    public void setResult(Integer result) {
+        this.result = result;
+    }
+
 
     DatabaseJson()
     {
@@ -42,11 +59,11 @@ public class DatabaseJson {
     }
 
 
-    public String getError() {
+    public Integer getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(Integer error) {
         this.error = error;
     }
 
@@ -217,6 +234,210 @@ public class DatabaseJson {
         // Log.v("JSON", json.toString());
         return usuarioArray;
     }
+
+
+    //insere ou altera Desafio no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereUsuario (int tipo, Usuario f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereUsuario.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("usuarios",f.toJson());
+
+
+        JSONObject json = null;
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+        if (json==null) {
+            setError(1);
+            return false;
+        }
+
+        else {
+            setError(0);
+            try{
+                setResult(json.getInt("result"));
+
+                if (json.getInt("result") > 0) {
+
+                    return true;
+                }
+            }catch (org.json.JSONException e)
+            {
+                setError(2);
+                return false;
+            }
+        }
+
+
+        return false;
+    }
+
+    //insere ou altera Tenista no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereTenista (int tipo, Tenista f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereTenista.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("tenista",f.toJsonOnlyTenista());
+
+
+        JSONObject json = null;
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+        if (json==null) {
+            setError(1);
+            return false;
+        }
+
+        else {
+            setError(0);
+            try{
+                setResult(json.getInt("result"));
+
+                if (json.getInt("result") > 0) {
+
+                    return true;
+                }
+            }catch (org.json.JSONException e)
+            {
+                setError(2);
+                return false;
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+    //insere ou altera Coordenador no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereCoordenador (int tipo, Coordenador f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereCoordenador.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("coordenadores",f.toJson());
+
+
+        JSONObject json = null;
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+        if (json==null) {
+            setError(1);
+            return false;
+        }
+
+        else {
+            setError(0);
+            try{
+                setResult(json.getInt("result"));
+
+                if (json.getInt("result") > 0) {
+
+                    return true;
+                }
+            }catch (org.json.JSONException e)
+            {
+                setError(2);
+                return false;
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+
+    //insere ou altera Desafio no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereCategoria (int tipo, Categoria f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereCategoria.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("categorias",f.toJson());
+
+
+        JSONObject json = null;
+
+
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+
+
+        if (json==null) {
+            setError(1);
+            return false;
+        }
+
+        else {
+            setError(0);
+        try{
+            setResult(json.getInt("result"));
+
+            if (json.getInt("result") > 0) {
+
+                return true;
+            }
+        }catch (org.json.JSONException e)
+        {
+            setError(2);
+            return false;
+        }
+        }
+
+
+        return false;
+    }
+
+
 
 
     //insere ou altera Desafio no banco
@@ -690,6 +911,58 @@ public class DatabaseJson {
         return rankingArray;
     }
 
+
+
+//retorna todos os coordenadores
+
+public ArrayList<Coordenador> getCoordenador(Integer idCoordenador, Integer idUsuario)
+{
+    HashMap<String, String> params = new HashMap<String, String>();
+    ArrayList <Coordenador> coordenadores = null;
+    JSONArray jsonCoordenadores = null;
+
+    if (idCoordenador!=-1)
+        params.put("idCoordenador",idCoordenador.toString());
+
+    if (idUsuario!=-1)
+        params.put("idUsuario",idUsuario.toString());
+
+    try {
+
+        //params.put("Email","diegofsantos@gmail.com");
+
+        String http = "http://"+IP+"/tenis/consultaCoordenador.php";
+        JSONObject json = jparser.makeHttpRequest(http, "POST", params);
+
+        if (json != null) {
+            if (json.getInt("result") == 1) {
+                jsonCoordenadores = json.getJSONArray("coordenadores");
+                coordenadores = new ArrayList<Coordenador>();
+                setError(0);
+                setResult(1);
+                for (int i = 0; i < jsonCoordenadores.length(); i++) {
+                    JSONObject u = jsonCoordenadores.getJSONObject(i);
+
+                    Coordenador temp = new Coordenador();
+                    temp.setIdCoordenadores(u.getInt("idCoordenador"));
+                    temp.setIdUsuarios(u.getInt("idUsuario"));
+                    coordenadores.add(temp);
+                }
+            }
+            else
+            {
+                setError(0); //não existem dados
+                setResult(0);
+            }
+
+        }else {
+            setError(1);
+        }
+    }catch (JSONException e) {e.printStackTrace();setError(2); }
+
+
+    return coordenadores;
+}
 
 
 //retorna todas as categorias

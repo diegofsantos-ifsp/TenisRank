@@ -50,7 +50,7 @@ public class FragmentRanking extends Fragment {
     private Integer idCoordenador = null;
 
 
-    private Integer posicaoUsuario=null;
+    private Integer posicaoUsuario=-1;
     private ArrayList<Categoria> categorias = null; //armazena todas as categorias existentes
     private ArrayList<String> nomesCategorias = null; //usado para armazenar os nomes das categorias no spinner
 
@@ -517,6 +517,8 @@ public class FragmentRanking extends Fragment {
             //  if (ranking!=null || ranking==null) {
 //                publishProgress(10);
             //Thread.sleep(1000);
+            if (idTenista<=0)
+                return null;
 
             DatabaseJson json = new DatabaseJson();
             json.setIP(IP);
@@ -530,6 +532,8 @@ public class FragmentRanking extends Fragment {
             //atualiza a posição atual no ranking do usuário
             int pos=0;
 
+
+
             if (temp!=null) {
                 for (int x = 0; x < temp.size(); x++)
                     if (temp.get(x).getUsuario().getEmail().compareToIgnoreCase(email) == 0) {
@@ -541,30 +545,34 @@ public class FragmentRanking extends Fragment {
                         break;
 
                     }
-            }
-
-            //verifica (de acordo com as regras) os jogadores acima do jogador atual que possui jogos marcados
-            //e, portanto, não poderão aceitar desafios
 
 
-            ArrayList<Desafio> tempDesafio = null;
-            for (int x=pos; x>=pos-3; x--) {
-                tempDesafio = json.getJogosByTenista(0,temp.get(x).getIdTenista(),0);
+                //verifica (de acordo com as regras) os jogadores acima do jogador atual que possui jogos marcados
+                //e, portanto, não poderão aceitar desafios
 
-                if (tempDesafio!=null)
-                {
-                    temp.get(x).setTemJogoMarcado(true);
+
+                ArrayList<Desafio> tempDesafio = null;
+
+                if (temp!=null && posicaoUsuario!=-1) {
+
+                    for (int x = pos; x >= pos - 3; x--) {
+
+
+                        tempDesafio = json.getJogosByTenista(0, temp.get(x).getIdTenista(), 0);
+
+                        if (tempDesafio != null) {
+                            temp.get(x).setTemJogoMarcado(true);
+                        } else
+                            temp.get(x).setTemJogoMarcado(false);
+
+                        //usuario atual
+                        if (x == pos) {
+                            adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
+                            //adapter.notifyDataSetChanged();
+                        }
+                    }
                 }
-                else
-                    temp.get(x).setTemJogoMarcado(false);
-
-                //usuario atual
-                if (x==pos) {
-                    adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
-                    //adapter.notifyDataSetChanged();
-                }
             }
-
             //publishProgress(60);
             //Thread.sleep(1000);
 
@@ -594,9 +602,11 @@ public class FragmentRanking extends Fragment {
             }
             else
             {
-                tenistas.clear();
-                tenistas = null;
-                adapter.notifyDataSetChanged();
+                if (tenistas!=null) {
+                    tenistas.clear();
+                    tenistas = null;
+                    adapter.notifyDataSetChanged();
+                }
             }
         }
 

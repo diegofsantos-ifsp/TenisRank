@@ -49,6 +49,7 @@ if (mysqli_num_rows($res) > 0)
 		$tenistas["Email"] = $row["Email"];
 		$tenistas["NomeUsuario"]=$row["NomeUsuario"];
 		$tenistas["CadastroValido"]=$row["CadastroValido"];
+		$tenistas["EstaNoRanking"]=$row["EstaNoRanking"];
 		
 		array_push($result["tenistas"],$tenistas);
 		//array_push($result,array('id'=>$row[0],'nome'=>$row[1],'endereco'=>$row[2],'telefone'=>$row[3],'email'=>$row[4],'usuario'=>$row[5],'senha'=>$row[6]));

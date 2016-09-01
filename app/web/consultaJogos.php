@@ -64,6 +64,11 @@ if (mysqli_num_rows($res) > 0)
 		$desafios["tieBreakDesafiador2"]=$row["tieBreakDesafiador2"];
 		$desafios["tieBreakDesafiador3"]=$row["tieBreakDesafiador3"];
 		$desafios["Ganhador"]=$row["Ganhador"];
+		$desafios["DesafiadorPontosSeGanhar"]=$row["DesafiadorPontosSeGanhar"];
+		$desafios["DesafiadorPontosSePerder"]=$row["DesafiadorPontosSePerder"];
+		$desafios["DesafiadoPontosSeGanhar"]=$row["DesafiadoPontosSeGanhar"];
+		$desafios["DesafiadoPontosSePerder"]=$row["DesafiadorPontosSePerder"];
+		$desafios["EstaNoRanking"]=$row["EstaNoRanking"];
 		
 		
 		

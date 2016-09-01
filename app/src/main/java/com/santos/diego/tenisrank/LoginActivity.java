@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private View mImageView;
     private String IP;
+    private Button novocadastro=null;
 
 
 
@@ -109,6 +110,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         IP = pref.getString("ip","0");
 
         mIPServer.setText(IP);
+
+        novocadastro = (Button) findViewById(R.id.button_novocadastro);
+
+        novocadastro.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this,Activity_CadastroUsuarios.class);
+
+             //       intent.putExtra("idUsuario",user.getId());
+               //     intent.putExtra("Nome",user.getNome());
+                 //   intent.putExtra("Email",user.getEmail());
+                   // intent.putExtra("idTenista",0);
+                   // intent.putExtra("idCoordenador",1);
+                    LoginActivity.this.startActivity(intent);
+                }
+        });
 
     }
 
@@ -444,7 +461,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         intent.putExtra("idTenista",0);
                     intent.putExtra("idCoordenador",1);
                 }
-                Log.i("idTenista",tenista.getIdTenista().toString());
+               // Log.i("idTenista",tenista.getIdTenista().toString());
 
                 LoginActivity.this.startActivity(intent);
             } else {

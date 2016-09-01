@@ -60,20 +60,55 @@ public class Tenista {
         this.temJogoMarcado = temJogoMarcado;
     }
 
+    public int getEstaNoRanking() {
+        return EstaNoRanking;
+    }
+
+    public void setEstaNoRanking(int estaNoRanking) {
+        EstaNoRanking = estaNoRanking;
+    }
+
 
 
     private Integer idTenista=-1;
     private Integer idUsuario=-1;
     private Integer Categoria=-1;
     private Integer posicaoAtualRanking=-1;
-    private Usuario usuario;
+    private Usuario usuario = null;
+
+
+    private int EstaNoRanking=0;
 
 
 
     private Boolean temJogoMarcado=false;
 
+    //converte para JSON somente os dados do tenista
+    public String toJsonOnlyTenista() {
 
-    public String toJson()
+
+        JSONObject json = new JSONObject();
+
+        try {
+
+            json.put("idTenistas",this.getIdTenista());
+            json.put("PosicaoAtualRanking",this.getPosicaoAtualRanking());
+            json.put("idCategoria",this.getCategoria());
+            json.put("EstaNoRanking",this.getEstaNoRanking());
+            json.put("idUsuarios",this.getUsuario().getId());
+
+
+            Log.i("JSONSTRING_ONLYTENISTA", json.toString());
+            return json.toString();
+
+
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    //converte para json os dados do tenista e do usuário
+    public String toJsonAllData()
     {
 
 
@@ -81,6 +116,10 @@ public class Tenista {
 
         try{
 
+            json.put("idTenistas",this.getIdTenista());
+            json.put("PosicaoAtualRanking",this.getPosicaoAtualRanking());
+            json.put("idCategoria",this.getCategoria());
+            json.put("EstaNoRanking",this.getEstaNoRanking());
             json.put("idUsuarios",this.getUsuario().getId());
             json.put("Nome",this.getUsuario().getNome());
             json.put("Endereco",this.getUsuario().getEndereco());
@@ -92,7 +131,7 @@ public class Tenista {
             json.put("HoraUltimoAcesso",this.getUsuario().getHoraultimoacesso());
             json.put("CadastroValido",this.getUsuario().isCadastrovalido());
 
-            Log.i("JSONSTRING_TENISTA",json.toString());
+            Log.i("JSONSTRING_ALLTENISTA",json.toString());
             return json.toString();
 
 

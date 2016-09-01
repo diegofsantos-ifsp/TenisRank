@@ -5,13 +5,31 @@
     android:id="@+id/activity__cadastro_usuarios"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.santos.diego.tenisrank.Activity_CadastroUsuarios">
+    android:orientation="vertical"
+    tools:context="com.santos.diego.tenisrank.Activity_CadastroUsuarios"
+    android:layout_marginBottom="5dp"
+    >
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cadastrar Novo Jogador"
+        android:background="@drawable/side_nav_bar"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="58dp"
-        tools:layout_editor_absoluteY="135dp">
+        android:layout_weight="1"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,8 +49,101 @@
                 android:hint="Nome Completo"
                 />
 
+
         </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edittext_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edittext_telefone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Telefone"
+                    android:inputType="phone"
+                    />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edittext_endereco"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Endereço"
+                    />
+
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edittext_senha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Senha"
+                    android:inputType="textPassword"
+                    />
+
+
+            </android.support.design.widget.TextInputLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Categoria: "
+                    android:textSize="18sp"
+                    />
+
+            <Spinner
+                android:id="@+id/spinner_categoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                >
+            </Spinner>
+            </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/button_enviarcadastro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enviar Cadastro"
+        />
 </LinearLayout>

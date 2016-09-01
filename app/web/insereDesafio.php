@@ -50,7 +50,9 @@ if (isset($_POST['desafio']))
 		ConfirmadoDesafiador=$d[ConfirmadoDesafiador],tieBreakDesafiado1=$d[tieBreakDesafiado1],
 		tieBreakDesafiador1=$d[tieBreakDesafiador1],tieBreakDesafiado2=$d[tieBreakDesafiado2],
 		tieBreakDesafiador2=$d[tieBreakDesafiador2],tieBreakDesafiado3=$d[tieBreakDesafiado3],
-		tieBreakDesafiador3=$d[tieBreakDesafiador3],Ganhador=$d[Ganhador] where idDesafios=$d[idDesafio]";
+		tieBreakDesafiador3=$d[tieBreakDesafiador3],Ganhador=$d[Ganhador],DesafiadorPontosSeGanhar=$d[DesafiadorPontosSeGanhar],
+		DesafiadorPontosSePerder=$d[DesafiadorPontosSePerder], DesafiadoPontosSeGanhar=$d[DesafiadoPontosSeGanhar],
+		DesafiadoPontosSePerder=$d[DesafiadoPontosSePerder],EstaNoRanking=$d[EstaNoRanking]	where idDesafios=$d[idDesafio]";
 	}
 
 }

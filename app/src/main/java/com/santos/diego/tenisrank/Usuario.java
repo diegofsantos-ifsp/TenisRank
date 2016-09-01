@@ -100,7 +100,7 @@ public class Usuario {
         JSONObject json = new JSONObject();
 
         try{
-            json.put("idUsuarios",this.getId());
+            json.put("idUsuario",this.getId());
             json.put("Nome",this.getNome());
             json.put("Endereco",this.getEndereco());
             json.put("Telefone",this.getTelefone());
