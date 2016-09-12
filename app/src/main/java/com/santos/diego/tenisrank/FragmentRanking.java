@@ -43,6 +43,8 @@ public class FragmentRanking extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    SharedPreferences pref = null;
+
     private String nome = null;
     private String email = null;
     private Integer idUsuario = null;
@@ -76,6 +78,7 @@ public class FragmentRanking extends Fragment {
 
     private Boolean precisaColocarResultado=false;
 
+    private Regra regra = null;
 
     public FragmentRanking() {
         // Required empty public constructor
@@ -109,8 +112,36 @@ public class FragmentRanking extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+       // regra = new Regra();
+        regra.setIdRegra(Integer.valueOf(pref.getString("idRegra","-1")));
+        regra.setDataAlteracao(pref.getString("DataAlteracao",""));
+        regra.setQtdDiasPorMesPodeDesafiar(Integer.valueOf(pref.getString("QtdDiasPorMesPodeDesafiar","-1")));
+        regra.setQtdDiasPorMesRebecerDesafio(Integer.valueOf(pref.getString("QtdDiasPMesReceberDesafio","-1")));
+        regra.setPosicaoMaximaQPodeDesafiar(Integer.valueOf(pref.getString("PosicaoMaximaQPodeDesafiar","-1")));
+        regra.setDesafiadorQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoVitoria","-1")));
+        regra.setDesafiadoQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoVitoria","-1")));
+        regra.setDesafiadorQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoDerrota","-1")));
+        regra.setDesafiadoQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoDerrota","-1")));
+        regra.setQtdPosCaiCasoNaoDesafieMes(Integer.valueOf(pref.getString("QtdPosCaiCasoNaoDesafieMes","-1")));
+        regra.setTempoWO(Integer.valueOf(pref.getString("TempoWO","-1")));
+        regra.setQtdPosicoesPerdeCasoWO(Integer.valueOf(pref.getString("QtdPosicoesPerdeCasoWO","-1")));
+
+
+        if (categorias!=null && !categorias.isEmpty()) {
+               // adapter.setRegra(regra);
+                adapter.notifyDataSetChanged();
+        }
+          //  RankingAsyncTask rasync = new RankingAsyncTask(0, categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+            //rasync.execute((Void) null);
+    }
 /*
     @Override
     public void onResume()
@@ -133,7 +164,7 @@ public class FragmentRanking extends Fragment {
         textView_Data = (TextView) view.findViewById(R.id.textview_data);
         textView_Hora = (TextView) view.findViewById(R.id.textview_hora);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         IP = pref.getString("ip","0");
 
 
@@ -142,6 +173,26 @@ public class FragmentRanking extends Fragment {
         idTenista = args.getInt("idTenista",0);
         nome = args.getString("Nome",null);
         email = args.getString("Email",null);
+
+
+
+
+
+        regra = new Regra();
+        regra.setIdRegra(Integer.valueOf(pref.getString("idRegra","-1")));
+        regra.setDataAlteracao(pref.getString("DataAlteracao",""));
+        regra.setQtdDiasPorMesPodeDesafiar(Integer.valueOf(pref.getString("QtdDiasPorMesPodeDesafiar","-1")));
+        regra.setQtdDiasPorMesRebecerDesafio(Integer.valueOf(pref.getString("QtdDiasPMesReceberDesafio","-1")));
+        regra.setPosicaoMaximaQPodeDesafiar(Integer.valueOf(pref.getString("PosicaoMaximaQPodeDesafiar","-1")));
+        regra.setDesafiadorQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoVitoria","-1")));
+        regra.setDesafiadoQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoVitoria","-1")));
+        regra.setDesafiadorQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoDerrota","-1")));
+        regra.setDesafiadoQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoDerrota","-1")));
+        regra.setQtdPosCaiCasoNaoDesafieMes(Integer.valueOf(pref.getString("QtdPosCaiCasoNaoDesafieMes","-1")));
+        regra.setTempoWO(Integer.valueOf(pref.getString("TempoWO","-1")));
+        regra.setQtdPosicoesPerdeCasoWO(Integer.valueOf(pref.getString("QtdPosicoesPerdeCasoWO","-1")));
+
+       // Log.i("RegraFRAME",regra.getDataAlteracao());
 
 
         nomesCategorias = new ArrayList<String>();
@@ -187,6 +238,7 @@ public class FragmentRanking extends Fragment {
         adapter.setEmail(email);
         adapter.setidUsuario(idUsuario);
 
+        adapter.setRegra(regra);
 
 
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -555,6 +607,7 @@ public class FragmentRanking extends Fragment {
 
                 if (temp!=null && posicaoUsuario!=-1) {
 
+                    //substituir o 3 pela quantidade de jogadores que poderão ser desafiados
                     for (int x = pos; x >= pos - 3; x--) {
 
 

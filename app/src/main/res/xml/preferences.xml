@@ -7,8 +7,84 @@
             android:defaultValue="3"
             android:selectAllOnFocus="true"
             android:title="Jogadores para desafiar"
-            android:key="edit_text_preference_qtd_jogadores"
-            android:summary="Quantidade de jogadores que o usuário poderá desafiar" />
+            android:key="QtdDiasPorMesPodeDesafiar"
+            android:inputType="number"
+            android:summary="Um jogador pode desafiar quantos jogadores por mês?" />
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Jogos como desafiado"
+            android:key="QtdDiasPMesReceberDesafio"
+            android:inputType="number"
+            android:summary="Um jogador pode receber quantos desafios por mês?" />
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Número de Posições"
+            android:key="PosicaoMaximaQPodeDesafiar"
+            android:inputType="number"
+            android:summary="Quantidade máxima de posições acima que o usuário poderá desafiar" />
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Vitória do Desafiador"
+            android:key="DesafiadorQtdPosCasoVitoria"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o Desafiador ganhará caso ganhe a partida (-1 para tomar o lugar do usuário desafiado)" />
+
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Vitória do Desafiado"
+            android:key="DesafiadoQtdPosCasoVitoria"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o Desafiado ganhará caso ganhe a partida" />
+
+        <EditTextPreference
+            android:defaultValue="3"
+            android:selectAllOnFocus="true"
+            android:title="Derrota do Desafiador"
+            android:key="DesafiadorQtdPosCasoDerrota"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o Desafiador perderá caso perca a partida (-1 para perder o mesmo número de posições que desafiou acima da sua)" />
+
+        <EditTextPreference
+            android:defaultValue="1"
+            android:selectAllOnFocus="true"
+            android:title="Derrota do Desafiado"
+            android:key="DesafiadoQtdPosCasoDerrota"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o Desafiado perderá caso perca a partida" />
+
+        <EditTextPreference
+            android:defaultValue="5"
+            android:selectAllOnFocus="true"
+            android:title="Pontos caso usuário não desafie"
+            android:key="QtdPosCaiCasoNaoDesafieMes"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o jogador perderá caso não desafie durante um mês" />
+
+        <EditTextPreference
+            android:defaultValue="5"
+            android:selectAllOnFocus="true"
+            android:title="Tempo de WO"
+            android:key="TempoWO"
+            android:inputType="number"
+            android:summary="Tempo máximo que o usuário poderá se atrasar antes do começo da partida" />
+
+        <EditTextPreference
+            android:defaultValue="5"
+            android:selectAllOnFocus="true"
+            android:title="Qtd de pontos caso perca por WO"
+            android:key="QtdPosicoesPerdeCasoWO"
+            android:inputType="number"
+            android:summary="Quantidade de pontos que o jogador perderá caso não compareça ao jogo (WO)" />
+
+
     </PreferenceCategory>
 
 </PreferenceScreen>

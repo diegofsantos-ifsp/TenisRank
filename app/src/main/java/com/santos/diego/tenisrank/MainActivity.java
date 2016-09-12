@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
     private Spinner spinner = null;
     private TextView textView_Data = null;
     private TextView textView_Hora = null;
-    ProgressDialog progressDialog = null;
+    //ProgressDialog progressDialog = null;
 
     private ListView lv = null;
 
@@ -160,9 +160,6 @@ public class MainActivity extends AppCompatActivity
         tv.setText(email);
 
 
-        Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
-        FragmentManager fragmentManager = this.getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
 
 
         //lista do ranking
@@ -249,6 +246,8 @@ public class MainActivity extends AppCompatActivity
         IP = pref.getString("ip","0");
 
 
+        ConsultaRegrasAsyncTask consultaRegras = new ConsultaRegrasAsyncTask();
+        consultaRegras.execute((Void) null);
 
     }
 
@@ -402,7 +401,9 @@ public class MainActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"RankingFragment").commit();
             this.setTitle("Ranking");
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_categorias) {
+
+            this.setTitle("Categorias");
 
         } else if (id == R.id.nav_manage) {
 
@@ -463,6 +464,7 @@ private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolea
 {
     //se insere = false então o banco atualizará os dados ao invés de inserir
     private boolean insere = true;
+    private ProgressDialog progressDialog;
 
     public boolean isInsere() {
         return insere;
@@ -478,9 +480,9 @@ private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolea
     protected void onPreExecute()
     {
         super.onPreExecute();
-      //  progressDialog = new ProgressDialog(getApplicationContext());
-      //  progressDialog.setMessage("Marcando desafio, aguarde...");
-      //  progressDialog.show();
+         progressDialog = new ProgressDialog(MainActivity.this);
+         progressDialog.setMessage("Enviando dados, aguarde...");
+         progressDialog.show();
     }
 
     @Override
@@ -497,7 +499,7 @@ private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolea
 
 
         }
-        //progressDialog.dismiss();
+        progressDialog.cancel();
 
     }
 
@@ -530,6 +532,108 @@ private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolea
         return true;
     }
 }
+
+private class ConsultaRegrasAsyncTask extends AsyncTask<Void, Void, Boolean>
+{
+
+    private ProgressDialog progressDialog;
+    ArrayList<Regra> regras = null;
+
+    Regra regra = null;
+
+    @Override
+    protected Boolean doInBackground(Void... voids) {
+
+        DatabaseJson json = new DatabaseJson();
+        json.setIP(IP);
+
+        regras = json.getRegras();
+
+
+        if (regras==null || json.getError()>0) {
+            Log.i("Regras","false");
+            return false;
+        }
+
+        Log.i("Regras","true");
+
+        if (regras!=null)
+            regra = regras.get(0);
+
+        return true;
+    }
+
+
+
+    @Override
+    protected void onPreExecute()
+    {
+        super.onPreExecute();
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Carregando...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+
+
+    }
+
+    @Override
+    protected void onPostExecute(Boolean b)
+    {
+        super.onPostExecute(b);
+
+        if (regras!=null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            SharedPreferences.Editor editor = pref.edit();
+            Log.i("idRegra",regra.getIdRegra().toString());
+            editor.putString("idRegra", regra.getIdRegra().toString());
+            editor.putString("DataAlteracao",regra.getDataAlteracao());
+            editor.putString("QtdDiasPorMesPodeDesafiar",regra.getQtdDiasPorMesPodeDesafiar().toString());
+            editor.putString("QtdDiasPMesReceberDesafio",regra.getQtdDiasPorMesRebecerDesafio().toString());
+            editor.putString("PosicaoMaximaQPodeDesafiar",regra.getPosicaoMaximaQPodeDesafiar().toString());
+            editor.putString("DesafiadorQtdPosCasoVitoria",regra.getDesafiadorQtdPosCasoVitoria().toString());
+            editor.putString("DesafiadoQtdPosCasoVitoria",regra.getDesafiadoQtdPosCasoVitoria().toString());
+            editor.putString("DesafiadorQtdPosCasoDerrota",regra.getDesafiadorQtdPosCasoDerrota().toString());
+            editor.putString("DesafiadoQtdPosCasoDerrota",regra.getDesafiadoQtdPosCasoDerrota().toString());
+            editor.putString("QtdPosCaiCasoNaoDesafieMes",regra.getQtdPosCaiCasoNaoDesafieMes().toString());
+            editor.putString("TempoWO",regra.getTempoWO().toString());
+            editor.putString("QtdPosicoesPerdeCasoWO",regra.getQtdPosicoesPerdeCasoWO().toString());
+
+
+            editor.commit();
+
+
+
+
+        }
+
+        progressDialog.cancel();
+
+        Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+
+
+
+
+
+
+        //MenuItem item =;
+        //int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        //if (id == R.id.action_settings) {
+
+
+
+        }
+
+
+
+}
+
 
 }
 

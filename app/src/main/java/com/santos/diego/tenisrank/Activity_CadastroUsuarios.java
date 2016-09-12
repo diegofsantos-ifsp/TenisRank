@@ -94,7 +94,7 @@ public class Activity_CadastroUsuarios extends Activity {
                     usuario.setSenha(senha.getText().toString());
 
                     Calendar cal = Calendar.getInstance();
-                    String data = String.valueOf(cal.get(Calendar.YEAR))+"-"+String.valueOf(cal.get(Calendar.MONTH))+"-"+String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+                    String data = String.valueOf(cal.get(Calendar.YEAR))+"-"+String.valueOf(cal.get(Calendar.MONTH)+1)+"-"+String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
                     String hora = String.valueOf(cal.get(Calendar.HOUR))+":"+String.valueOf(cal.get(Calendar.MINUTE));
 
                     usuario.setDataultimoacesso(data);
@@ -128,7 +128,7 @@ public class Activity_CadastroUsuarios extends Activity {
                                             cadastrar.setNomeCategoria(input.getText().toString());
                                             cadastrar.execute((Void) null);
                                             //cadastrar categoria, usuário, tenista e coordenador
-
+                                            finish();
 
                                         }
                                     });
@@ -152,6 +152,7 @@ public class Activity_CadastroUsuarios extends Activity {
                             cadastrar.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
                             cadastrar.setUsuario(usuario);
                             cadastrar.execute((Void) null);
+                            finish();
 
                         }
 
@@ -162,12 +163,13 @@ public class Activity_CadastroUsuarios extends Activity {
                         cadastrar.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
                         cadastrar.setUsuario(usuario);
                         cadastrar.execute((Void) null);
+                        finish();
                     }
 
 
                 }
                 else
-                    Toast.makeText(Activity_CadastroUsuarios.this, "Todos os campos são obrigatórios !!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Activity_CadastroUsuarios.this, "Todos os campos são obrigatórios !!!", Toast.LENGTH_LONG).show();
 
             }
         });
@@ -337,9 +339,10 @@ public class Activity_CadastroUsuarios extends Activity {
         protected void onPostExecute(Boolean res) {
             super.onPostExecute(res);
             if (res != false) {
-
-
+                Toast.makeText(Activity_CadastroUsuarios.this, "Usuário cadastro com sucesso !!!", Toast.LENGTH_LONG).show();
             }
+            else
+                Toast.makeText(Activity_CadastroUsuarios.this, "Ocorreu um problema ao cadastrar o usuário !!!", Toast.LENGTH_LONG).show();
         }
     }
 

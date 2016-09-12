@@ -37,7 +37,7 @@ public class DatabaseJson {
     //se erro=0 (não tem erro)
     //se erro=1 (erro de conexão)
     //se erro=2 (erro no Json)
-    Integer error;
+    Integer error=0;
 
 
     //retorna o resultado das consultas
@@ -67,6 +67,62 @@ public class DatabaseJson {
         this.error = error;
     }
 
+
+
+    //retorna as regras
+    public ArrayList<Regra> getRegras()
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+
+        JSONArray regrasJson = null;
+        ArrayList<Regra> regrasArray = null;
+     //   Log.v("JSON","ANTES");
+        try {
+
+            //params.put("Email","diegofsantos@gmail.com");
+
+            String http = "http://"+IP+"/tenis/consultaRegra.php";
+            //Log.i("HTTP",http);
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
+            if (json != null) {
+                if (json.getInt("result") == 1) {
+                    result = json.getInt("result");
+
+                    regrasJson = json.getJSONArray("regras");
+                    regrasArray = new ArrayList<Regra>();
+
+                    for (int i = 0; i < regrasJson.length(); i++) {
+                        JSONObject u = regrasJson.getJSONObject(i);
+
+                        Regra temp = new Regra();
+                        temp.setIdRegra(u.getInt("idRegra"));
+                        temp.setDataAlteracao(u.getString("DataAlteracao"));
+                        temp.setQtdDiasPorMesPodeDesafiar(u.getInt("QtdDiasPorMesPodeDesafiar"));
+                        temp.setQtdDiasPorMesRebecerDesafio(u.getInt("QtdDiasPMesReceberDesafio"));
+                        temp.setPosicaoMaximaQPodeDesafiar(u.getInt("PosicaoMaximaQPodeDesafiar"));
+                        temp.setDesafiadorQtdPosCasoVitoria(u.getInt("DesafiadorQtdPosCasoVitoria"));
+                        temp.setDesafiadoQtdPosCasoVitoria(u.getInt("DesafiadoQtdPosCasoVitoria"));
+                        temp.setDesafiadorQtdPosCasoDerrota(u.getInt("DesafiadorQtdPosCasoDerrota"));
+                        temp.setDesafiadoQtdPosCasoDerrota(u.getInt("DesafiadoQtdPosCasoDerrota"));
+                        temp.setQtdPosCaiCasoNaoDesafieMes(u.getInt("QtdPosCaiCasoNaoDesafieMes"));
+                        temp.setTempoWO(u.getInt("TempoWO"));
+                        temp.setQtdPosicoesPerdeCasoWO(u.getInt("QtdPosicoesPerdeCasoWO"));
+                        regrasArray.add(temp);
+
+                    }
+                }
+            }
+            else {
+                setError(1);
+
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); setError(2);}
+
+
+        // Log.v("JSON", json.toString());
+        return regrasArray;
+    }
 
 
 
@@ -237,6 +293,56 @@ public class DatabaseJson {
 
 
     //insere ou altera Desafio no banco
+    //se tipo =1 insere
+    //se tipo =2 altera
+    public boolean insereRegra (int tipo, Regra f)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+        String http = "http://"+IP+"/tenis/insereRegra.php";
+
+
+        if (tipo==1)
+            params.put("tipo","1");
+        else
+            params.put("tipo","2");
+
+        params.put("regras",f.toJson());
+
+
+        JSONObject json = null;
+
+
+        json = jparser.makeHttpRequest(http,"POST",params);
+
+
+        if (json==null) {
+            setError(1);
+            return false;
+        }
+
+        else {
+            setError(0);
+            try{
+                setResult(json.getInt("result"));
+
+                if (json.getInt("result") > 0) {
+
+                    return true;
+                }
+            }catch (org.json.JSONException e)
+            {
+                setError(2);
+                return false;
+            }
+        }
+
+
+        return false;
+    }
+
+
+
+    //insere ou altera Usuário no banco
     //se tipo =1 insere
     //se tipo =2 altera
     public boolean insereUsuario (int tipo, Usuario f)

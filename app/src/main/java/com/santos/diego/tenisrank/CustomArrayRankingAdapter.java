@@ -31,6 +31,19 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     private Integer posicao=null;
     private String nome;
     private String email;
+    Regra regra=null;
+
+
+
+    public Regra getRegra() {
+        return regra;
+    }
+
+    public void setRegra(Regra regra) {
+        this.regra = regra;
+    }
+
+
 
 
     private boolean usuario_pode_marcar_jogo=true;
@@ -142,7 +155,7 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
             if (usuario_pode_marcar_jogo) {
 
                 int diferenca = (posicao - 1) - position;
-                if ((diferenca >= 1 && diferenca <= 3) && (!item.getTemJogoMarcado())) //3 posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
+                if ((diferenca >= 1 && diferenca <= regra.getPosicaoMaximaQPodeDesafiar()) && (!item.getTemJogoMarcado())) //N posicoes acima que pode desafiar (mostrar botão do telefone e desafio)
                 {
                     //  convertView.setBackgroundColor(Color.parseColor("#FFFFE7B3"));
                     //viewHolder.imgView.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.tennis_icon_32));
