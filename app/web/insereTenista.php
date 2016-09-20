@@ -27,9 +27,13 @@ if (isset($_POST['tenista']))
 	else if ($tipo==2)
 	{
 		
-		$sql = "update Desafio SET idTenistas = $d[idTenistas],Usuarios_idUsuarios=$d[idUsuarios],
+		$sql = "update Tenista SET idTenistas = $d[idTenistas],Usuarios_idUsuarios=$d[idUsuarios],
 		PosicaoAtualRanking=$d[PosicaoAtualRanking],Categoria_idCategoria=$d[idCategoria],EstaNoRanking=$d[EstaNoRanking]
 			where idTenistas=$d[idTenistas]";
+	}
+	else if ($tipo==3)
+	{
+		$sql = "delete from Tenista where idTenistas=$d[idTenistas]";
 	}
 
 }

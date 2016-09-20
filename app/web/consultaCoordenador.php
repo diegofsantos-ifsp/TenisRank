@@ -5,7 +5,7 @@ include 'connect.php';
 if (isset($_POST['idUsuario']))
 {
 	$idUsuarios=$_POST['idUsuario'];
-	$sql = "select * from Coordenador where Usuarios_idUsuarios='$idUsuario'";
+	$sql = "select * from Coordenador where Usuarios_idUsuarios='$idUsuarios'";
 }
 else if (isset($_POST['idCoordenador']))
 {

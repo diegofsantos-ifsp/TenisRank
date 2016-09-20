@@ -1,7 +1,9 @@
 package com.santos.diego.tenisrank;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -29,6 +32,12 @@ public class Activity_CadastroUsuarios extends Activity {
     private String IP = null;
 
 
+    private Integer idCoordenador = 0;
+    private Integer operacao = 1; //1 insere e 2 altera
+
+
+    private Tenista tenista = null; //enviado via outra activity para alterar os dados do tenista
+
     private Boolean existeCoordenador=false;
 
     private EditText nome = null;
@@ -36,6 +45,20 @@ public class Activity_CadastroUsuarios extends Activity {
     private EditText telefone = null;
     private EditText senha = null;
     private EditText endereco = null;
+
+    private CheckBox chkCadastroValido = null;
+
+
+    private Usuario user = null;
+
+
+    public Tenista getTenista() {
+        return tenista;
+    }
+
+    public void setTenista(Tenista tenista) {
+        this.tenista = tenista;
+    }
 
 
     @Override
@@ -53,6 +76,20 @@ public class Activity_CadastroUsuarios extends Activity {
         telefone = (EditText) findViewById(R.id.edittext_telefone);
         senha = (EditText) findViewById(R.id.edittext_senha);
         email = (EditText) findViewById(R.id.edittext_email);
+
+        chkCadastroValido = (CheckBox) findViewById(R.id.checkBox_cadastroValido);
+
+
+        Intent intent = getIntent();
+
+        operacao = intent.getIntExtra("operacao",1);
+
+        idCoordenador = intent.getIntExtra("idCoordenador",0);
+
+        if (idCoordenador>0) {
+            chkCadastroValido.setVisibility(View.VISIBLE);
+            chkCadastroValido.setChecked(true);
+        }
 
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -74,6 +111,63 @@ public class Activity_CadastroUsuarios extends Activity {
         consultaTask.execute((Void) null);
 
 
+
+
+
+        //alteração dos dados do jogador... ler os dados atuais passados pela activity anterior
+        if (operacao==2) {
+
+            chkCadastroValido.setVisibility(View.VISIBLE);
+            user = new Usuario();
+            tenista = new Tenista();
+
+            tenista.setIdTenista(intent.getIntExtra("idTenista",0));
+            tenista.setCategoria(intent.getIntExtra("idCategoria",0));
+            tenista.setIdUsuario(intent.getIntExtra("idUsuario",0));
+            user.setId(intent.getIntExtra("idUsuario",0));
+            user.setNome(intent.getStringExtra("Nome"));
+            user.setEmail(intent.getStringExtra("Email"));
+            user.setTelefone(intent.getStringExtra("Telefone"));
+            user.setSenha(intent.getStringExtra("Senha"));
+            user.setEndereco(intent.getStringExtra("Endereco"));
+
+            user.setCadastrovalido(intent.getIntExtra("CadastroValido",0));
+
+            Log.i("CadastroValido2",String.valueOf(user.isCadastrovalido()));
+            tenista.setEstaNoRanking(intent.getIntExtra("EstaNoRanking", 0));
+
+            tenista.setUsuario(user);
+
+
+            nome.setText(user.getNome());
+            endereco.setText(user.getEndereco());
+            telefone.setText(user.getTelefone());
+            email.setText(user.getEmail());
+
+            senha.setText(user.getSenha());
+
+
+            if (user.isCadastrovalido()==1)
+                chkCadastroValido.setChecked(true);
+            else
+                chkCadastroValido.setChecked(false);
+
+            if (categorias!=null)
+            {
+                int x=0;
+                for (x=0; x<categorias.size(); x++)
+                {
+                    if (tenista.getCategoria()==categorias.get(x).getIdCategoria())
+                        break;
+                }
+                spinner.setSelection(x);
+            }
+        }
+
+
+
+
+
         //ao clicar no botão, executar código para armazenar os dados do usuário no banco
         button_enviarCadastro.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,85 +180,121 @@ public class Activity_CadastroUsuarios extends Activity {
                 if (!nome.getText().toString().isEmpty() && !endereco.getText().toString().isEmpty() &&
                      !telefone.getText().toString().isEmpty() && !senha.getText().toString().isEmpty() && !email.getText().toString().isEmpty())
                 {
-                    final Usuario usuario = new Usuario();
-                    usuario.setNome(nome.getText().toString());
-                    usuario.setEndereco(endereco.getText().toString());
-                    usuario.setTelefone(telefone.getText().toString());
-                    usuario.setEmail(email.getText().toString());
-                    usuario.setSenha(senha.getText().toString());
-
-                    Calendar cal = Calendar.getInstance();
-                    String data = String.valueOf(cal.get(Calendar.YEAR))+"-"+String.valueOf(cal.get(Calendar.MONTH)+1)+"-"+String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
-                    String hora = String.valueOf(cal.get(Calendar.HOUR))+":"+String.valueOf(cal.get(Calendar.MINUTE));
-
-                    usuario.setDataultimoacesso(data);
-                    usuario.setHoraultimoacesso(hora);
-
-                    //ao adicionar o usuário, fazer com que ele já fique ativo no sistema
-                    usuario.setCadastrovalido(1);
-
-                    //se existem coordenadores cadastrados, cadastrar o usuário atual somente como tenista
-                    if (!existeCoordenador) {
-                        //cadastrar nova categoria
-                        if (nomesCategorias.isEmpty()) {
-                            AlertDialog.Builder builder1 = new AlertDialog.Builder(Activity_CadastroUsuarios.this);
-                            builder1.setTitle("Cadastro de categorias");
-                            builder1.setMessage("Não existem categorias cadastradas!!\nPara que você possa se cadastrar como coordenador, você deverá antes digitar no campo abaixo" +
-                                    " o nome de uma categoria para incluir no sistema.\n\n");
-                            builder1.setCancelable(true);
-                            final EditText input = new EditText(Activity_CadastroUsuarios.this);
-                            builder1.setView(input);
-
-                            builder1.setPositiveButton(
-                                    "Cadastrar",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
 
 
-                                            CadastrarUsuarioTask cadastrar = new CadastrarUsuarioTask();
-                                            cadastrar.setCadastrarCategoria(true);
-                                            cadastrar.setCadastrarCoordenador(true);
-                                            cadastrar.setUsuario(usuario);
-                                            cadastrar.setNomeCategoria(input.getText().toString());
-                                            cadastrar.execute((Void) null);
-                                            //cadastrar categoria, usuário, tenista e coordenador
-                                            finish();
+                        final Usuario usuario = new Usuario();
+                        final Tenista ten = new Tenista();
+                        usuario.setNome(nome.getText().toString());
+                        usuario.setEndereco(endereco.getText().toString());
+                        usuario.setTelefone(telefone.getText().toString());
+                        usuario.setEmail(email.getText().toString());
+                        usuario.setSenha(senha.getText().toString());
 
-                                        }
-                                    });
-
-                            builder1.setNegativeButton(
-                                    "Cancelar",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-
-                            AlertDialog alert11 = builder1.create();
-                            alert11.show();
-                        }
-                        //existe categoria já selecionada pelo usuário
+                        if (chkCadastroValido.isChecked())
+                            usuario.setCadastrovalido(1);
                         else
-                        {
+                            usuario.setCadastrovalido(0);
+
+                        ten.setPosicaoAtualRanking(0);
+                        ten.setEstaNoRanking(0);
+
+
+
+                        if (operacao==2) {
+
+                            usuario.setId(tenista.getUsuario().getId());
+                            ten.setIdTenista(tenista.getIdTenista());
+                            ten.setEstaNoRanking(tenista.getEstaNoRanking());
+
+                        }
+
+
+
+                        Calendar cal = Calendar.getInstance();
+                        String data = String.valueOf(cal.get(Calendar.YEAR)) + "-" + String.valueOf(cal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+                        String hora = String.valueOf(cal.get(Calendar.HOUR)) + ":" + String.valueOf(cal.get(Calendar.MINUTE));
+
+                        usuario.setDataultimoacesso(data);
+                        usuario.setHoraultimoacesso(hora);
+
+                        //ao adicionar o usuário, fazer com que ele já fique ativo no sistema
+                        if (operacao==1)
+                            usuario.setCadastrovalido(1);
+
+
+                        ten.setUsuario(usuario);
+
+
+                        //se existem coordenadores cadastrados, cadastrar o usuário atual somente como tenista
+                        if (!existeCoordenador) {
+                            //cadastrar nova categoria
+                            if (nomesCategorias.isEmpty()) {
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(Activity_CadastroUsuarios.this);
+                                builder1.setTitle("Cadastro de categorias");
+                                builder1.setMessage("Não existem categorias cadastradas!!\nPara que você possa se cadastrar como coordenador, você deverá antes digitar no campo abaixo" +
+                                        " o nome de uma categoria para incluir no sistema.\n\n");
+                                builder1.setCancelable(true);
+                                final EditText input = new EditText(Activity_CadastroUsuarios.this);
+                                builder1.setView(input);
+
+                                builder1.setPositiveButton(
+                                        "Cadastrar",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+
+
+                                                CadastrarUsuarioTask cadastrar = new CadastrarUsuarioTask();
+                                                cadastrar.setCadastrarCategoria(true);
+                                                cadastrar.setCadastrarCoordenador(true);
+                                                cadastrar.setUsuario(usuario);
+                                                cadastrar.setNomeCategoria(input.getText().toString());
+                                                cadastrar.setTenista(ten);
+                                                cadastrar.execute((Void) null);
+                                                //cadastrar categoria, usuário, tenista e coordenador
+                                                finish();
+
+                                            }
+                                        });
+
+                                builder1.setNegativeButton(
+                                        "Cancelar",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                                AlertDialog alert11 = builder1.create();
+                                alert11.show();
+                            }
+                            //existe categoria já selecionada pelo usuário
+                            else {
+                                CadastrarUsuarioTask cadastrar = new CadastrarUsuarioTask();
+                                cadastrar.setCadastrarCoordenador(true);
+                                cadastrar.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+                                cadastrar.setUsuario(usuario);
+                                ten.setCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+                                cadastrar.setTenista(ten);
+                                cadastrar.execute((Void) null);
+                                finish();
+
+                            }
+
+                        }
+                        //se existe coordenador então existe categoria, cadastrar usuario e tenista
+                        else {
+                            Log.i("CadastroValido","ENTROU CERTO");
                             CadastrarUsuarioTask cadastrar = new CadastrarUsuarioTask();
-                            cadastrar.setCadastrarCoordenador(true);
                             cadastrar.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+                            cadastrar.setTenista(ten);
                             cadastrar.setUsuario(usuario);
+                            if (operacao==1)
+                                cadastrar.setTipo(1);
+                            else
+                                cadastrar.setTipo(2);
                             cadastrar.execute((Void) null);
                             finish();
-
                         }
-
-                    }
-                    //se existe coordenador então existe categoria, cadastrar usuario e tenista
-                    else {
-                        CadastrarUsuarioTask cadastrar = new CadastrarUsuarioTask();
-                        cadastrar.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
-                        cadastrar.setUsuario(usuario);
-                        cadastrar.execute((Void) null);
-                        finish();
-                    }
 
 
                 }
@@ -184,7 +314,19 @@ public class Activity_CadastroUsuarios extends Activity {
         private Integer novoidUsuario=-1;
 
 
+        private Integer tipo=1; //1 = insere, 2 = altera
+
         Usuario usuario=null;
+
+        public Tenista getTenista() {
+            return ten;
+        }
+
+        public void setTenista(Tenista ten) {
+            this.ten = ten;
+        }
+
+        private Tenista ten = null;
 
         Integer error=0;
         Integer result=0;
@@ -192,6 +334,15 @@ public class Activity_CadastroUsuarios extends Activity {
 
         String nomeCategoria=null;
         Integer idCategoria = -1;
+
+
+        public Integer getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(Integer tipo) {
+            this.tipo = tipo;
+        }
 
 
         public Usuario getUsuario() {
@@ -278,14 +429,20 @@ public class Activity_CadastroUsuarios extends Activity {
             //cadastrar Usuário
             if (usuario!=null)
             {
-                json.insereUsuario(1,usuario);
+                Log.i("CadastroValido3",String.valueOf(usuario.isCadastrovalido()));
+                json.insereUsuario(tipo,usuario);
                 error=json.getError();
                 result=json.getResult();
 
-                if (result==0)
-                    return false;
+                if (tipo==1) {
+                    if (result == 0)
+                        return false;
+                    else
+                        novoidUsuario = result;
+                }
                 else
-                    novoidUsuario = result;
+                    if (json.getError()>0)
+                        return false;
             }
 
 
@@ -308,20 +465,29 @@ public class Activity_CadastroUsuarios extends Activity {
 
             //se o usuário escolheu categoria então é possível adicionar um tenista
             if (idCategoria>0) {
-                Tenista ten = new Tenista();
+               /* Tenista ten = new Tenista();
                 ten.setCategoria(idCategoria);
                 ten.setPosicaoAtualRanking(0);
                 ten.setEstaNoRanking(0);
-                ten.setUsuario(usuario);
-                ten.getUsuario().setId(novoidUsuario);
+                ten.setUsuario(usuario);*/
 
-                json.insereTenista(1,ten);
+                if (tipo==1)
+                    ten.getUsuario().setId(novoidUsuario);
+
+                Log.i("CadastroValido4",String.valueOf(ten.getUsuario().isCadastrovalido()));
+                ten.setCategoria(idCategoria);
+                json.insereTenista(tipo,ten);
 
                 error=json.getError();
                 result=json.getResult();
 
-                if (result==0)
-                    return false;
+                if (tipo==1) {
+                    if (result == 0)
+                        return false;
+                }
+                else
+                    if (error>0)
+                        return false;
 
             }
 
@@ -345,6 +511,9 @@ public class Activity_CadastroUsuarios extends Activity {
                 Toast.makeText(Activity_CadastroUsuarios.this, "Ocorreu um problema ao cadastrar o usuário !!!", Toast.LENGTH_LONG).show();
         }
     }
+
+
+
 
     private class ConsultaBancoTask extends AsyncTask<Void, Void, Boolean>
     {
@@ -464,4 +633,5 @@ public class Activity_CadastroUsuarios extends Activity {
         }
 
     }
+
 }

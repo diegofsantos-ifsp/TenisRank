@@ -4,7 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_jogos"
-            android:icon="@drawable/tennis_player32"
+            android:icon="@drawable/tennis_court_black2"
             android:title="Jogos" />
         <item
             android:id="@+id/nav_ranking"
@@ -15,9 +15,9 @@
             android:icon="@drawable/ic_menu_send"
             android:title="Categorias" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_usuarios"
+            android:icon="@drawable/tennis_player32"
+            android:title="Tenistas" />
     </group>
 
     <item android:title="Communicate">

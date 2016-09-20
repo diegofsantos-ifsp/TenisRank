@@ -19,7 +19,7 @@ else if (isset($_GET['idTenistas']))
 else if (isset($_GET['idCategoria']))
 {
 	$idCategoria = $_GET['idCategoria'];
-	$sql = "select * from Tenista,Usuario where Categoria_idCategoria='$idCategoria' AND Usuario.idUsuarios=Tenista.Usuarios_idUsuarios";
+	$sql = "select * from Tenista,Usuario where Tenista.Categoria_idCategoria='$idCategoria' AND Usuario.idUsuarios=Tenista.Usuarios_idUsuarios";
 }
 else 
 	$sql = "select * from Tenista,Usuario where Usuario.idUsuarios=Tenista.Usuarios_idUsuarios";
@@ -47,6 +47,7 @@ if (mysqli_num_rows($res) > 0)
 		$tenistas["Endereco"] = $row["Endereco"];
 		$tenistas["Telefone"] = $row["Telefone"];
 		$tenistas["Email"] = $row["Email"];
+		$tenistas["Senha"]=$row["Senha"];
 		$tenistas["NomeUsuario"]=$row["NomeUsuario"];
 		$tenistas["CadastroValido"]=$row["CadastroValido"];
 		$tenistas["EstaNoRanking"]=$row["EstaNoRanking"];

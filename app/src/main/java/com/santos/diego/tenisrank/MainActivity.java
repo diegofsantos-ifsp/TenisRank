@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         textView_Data = (TextView) findViewById(R.id.textview_data);
         textView_Hora = (TextView) findViewById(R.id.textview_hora);
 */
-
+/*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-
+*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity
         idTenista = intent.getIntExtra("idTenista", 0);
         nome = intent.getStringExtra("Nome");
         email = intent.getStringExtra("Email");
+        idCoordenador = intent.getIntExtra("idCoordenador",0);
+
+
 
 /*
         nomesCategorias = new ArrayList<String>();
@@ -357,6 +360,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        //se não for coordenador não poderá alterar as regras
+        if (idCoordenador==0)
+            menu.getItem(0).setEnabled(false);
+
         return true;
     }
 
@@ -373,6 +381,7 @@ public class MainActivity extends AppCompatActivity
 
             Intent intent = new Intent(this,PreferencesActivity.class);
 
+            intent.putExtra("idCoordenador",idCoordenador);
             this.startActivity(intent);
 
             return true;
@@ -403,9 +412,20 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_categorias) {
 
+            FragmentCategorias fragment = FragmentCategorias.newInstance("","");
+            fragment.setIdCoordenador(idCoordenador);
+            FragmentManager fragmentManager = this.getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"Categorias").commit();
             this.setTitle("Categorias");
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_usuarios) {
+
+            FragmentTenistas fragment = FragmentTenistas.newInstance("","");
+            fragment.setIdCoordenador(idCoordenador);
+            FragmentManager fragmentManager = this.getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"Tenistas").commit();
+
+            this.setTitle("Tenistas");
 
         } else if (id == R.id.nav_share) {
 

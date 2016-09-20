@@ -353,8 +353,10 @@ public class DatabaseJson {
 
         if (tipo==1)
             params.put("tipo","1");
-        else
+        else if (tipo==2)
             params.put("tipo","2");
+        else if (tipo==3)
+            params.put("tipo","3");
 
         params.put("usuarios",f.toJson());
 
@@ -393,6 +395,7 @@ public class DatabaseJson {
     //insere ou altera Tenista no banco
     //se tipo =1 insere
     //se tipo =2 altera
+    //se tipo =3 exclui
     public boolean insereTenista (int tipo, Tenista f)
     {
         HashMap<String,String> params = new HashMap<String,String>();
@@ -401,8 +404,11 @@ public class DatabaseJson {
 
         if (tipo==1)
             params.put("tipo","1");
-        else
+        else if (tipo==2)
             params.put("tipo","2");
+        else if (tipo==3)
+            params.put("tipo","3");
+
 
         params.put("tenista",f.toJsonOnlyTenista());
 
@@ -494,6 +500,7 @@ public class DatabaseJson {
     //insere ou altera Desafio no banco
     //se tipo =1 insere
     //se tipo =2 altera
+    //se tipo==3 apaga
     public boolean insereCategoria (int tipo, Categoria f)
     {
         HashMap<String,String> params = new HashMap<String,String>();
@@ -502,8 +509,10 @@ public class DatabaseJson {
 
         if (tipo==1)
             params.put("tipo","1");
-        else
+        else if (tipo==2)
             params.put("tipo","2");
+        else if (tipo==3)
+            params.put("tipo","3");
 
         params.put("categorias",f.toJson());
 
@@ -852,11 +861,15 @@ public class DatabaseJson {
                     temp.setIdUsuario(u.getInt("idUsuarios"));
                     temp.setCategoria(u.getInt("Categoria"));
                     temp.setPosicaoAtualRanking(u.getInt("PosicaoAtualRanking"));
+                    temp.setEstaNoRanking(u.getInt("EstaNoRanking"));
+                    user.setId(u.getInt("idUsuarios"));
                     user.setNome(u.getString("Nome"));
+                    user.setSenha(u.getString("Senha"));
                     user.setEndereco(u.getString("Endereco"));
                     user.setTelefone(u.getString("Telefone"));
                     user.setEmail(u.getString("Email"));
                     user.setNomeusuario(u.getString("NomeUsuario"));
+                    user.setCadastrovalido(u.getInt("CadastroValido"));
                     temp.setUsuario(user);
 
                     tenistaArray.add(temp);

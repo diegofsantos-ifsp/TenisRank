@@ -3,7 +3,7 @@
 include 'connect.php';
 
 
-//tipo==1 insere, tipo==2 altera
+//tipo==1 insere, tipo==2 altera, tipo==3 apaga
 if (isset($_POST['tipo']))
 {
 	$tipo = $_POST['tipo'];
@@ -26,8 +26,10 @@ if (isset($_POST['categorias']))
 	else if ($tipo==2)
 	{
 		
-		$sql = "update Desafio SET idCategoria=$d[idCategoria],Nome=\"$d[Nome]\" where idCategoria=$d[idCategoria]";
+		$sql = "update Categoria SET idCategoria=$d[idCategoria],Nome=\"$d[Nome]\" where idCategoria=$d[idCategoria]";
 	}
+	else if ($tipo==3)
+		$sql = "delete from Categoria where idCategoria=$d[idCategoria]";
 
 }
 

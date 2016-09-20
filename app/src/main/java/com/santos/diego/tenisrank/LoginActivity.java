@@ -356,6 +356,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.login_progress);
         private Usuario user = null;
         private Tenista tenista = null;
+        private Integer idCoordenador = 0;
         private int error = 0; //1 = email; 2 = senha
 
         UserLoginTask(String email, String password) {
@@ -396,6 +397,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (users != null) {
                     if (!users.isEmpty()) {
                         user = users.get(0);
+
+                        //verifica se o usuário é coordenador
+                        ArrayList<Coordenador> coord;
+                        coord = json.getCoordenador(-1,user.getId());
+                    //    Log.i("IDUSUARIO",String.valueOf(user.getId()));
+                        if (coord!=null)
+                            idCoordenador = coord.get(0).getIdCoordenadores();
 
                         if ( (mEmail.compareToIgnoreCase(user.getEmail())==0) )
                             if ((mPassword.compareToIgnoreCase(user.getSenha())==0)) {
@@ -455,11 +463,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     intent.putExtra("idUsuario",user.getId());
                     intent.putExtra("Nome",user.getNome());
                     intent.putExtra("Email",user.getEmail());
+                    intent.putExtra("idCoordenador",idCoordenador);
+
                     if (tenista!=null)
                         intent.putExtra("idTenista",tenista.getIdTenista());
                     else
                         intent.putExtra("idTenista",0);
-                    intent.putExtra("idCoordenador",1);
+
                 }
                // Log.i("idTenista",tenista.getIdTenista().toString());
 

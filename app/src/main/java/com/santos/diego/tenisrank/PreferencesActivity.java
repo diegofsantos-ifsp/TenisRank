@@ -2,6 +2,7 @@ package com.santos.diego.tenisrank;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ public class PreferencesActivity extends Activity {
     private Regra regra = null;
     private String IP = null;
     SharedPreferences pref = null;
+    private Integer idCoordenador = 0;
 
 
     @Override
@@ -32,24 +34,27 @@ public class PreferencesActivity extends Activity {
     {
         super.onPause();
 
-        regra = new Regra();
-        regra.setIdRegra(Integer.valueOf(pref.getString("idRegra","-1")));
-        regra.setDataAlteracao(pref.getString("DataAlteracao",""));
-        regra.setQtdDiasPorMesPodeDesafiar(Integer.valueOf(pref.getString("QtdDiasPorMesPodeDesafiar","-1")));
-        regra.setQtdDiasPorMesRebecerDesafio(Integer.valueOf(pref.getString("QtdDiasPMesReceberDesafio","-1")));
-        regra.setPosicaoMaximaQPodeDesafiar(Integer.valueOf(pref.getString("PosicaoMaximaQPodeDesafiar","-1")));
-        regra.setDesafiadorQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoVitoria","-1")));
-        regra.setDesafiadoQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoVitoria","-1")));
-        regra.setDesafiadorQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoDerrota","-1")));
-        regra.setDesafiadoQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoDerrota","-1")));
-        regra.setQtdPosCaiCasoNaoDesafieMes(Integer.valueOf(pref.getString("QtdPosCaiCasoNaoDesafieMes","-1")));
-        regra.setTempoWO(Integer.valueOf(pref.getString("TempoWO","-1")));
-        regra.setQtdPosicoesPerdeCasoWO(Integer.valueOf(pref.getString("QtdPosicoesPerdeCasoWO","-1")));
 
-        InsereRegraAsyncTask regraAsync = new InsereRegraAsyncTask();
-        regraAsync.setRegra(regra);
-        regraAsync.execute((Void) null);
+        if (idCoordenador>0) {
+            regra = new Regra();
+            regra.setIdRegra(Integer.valueOf(pref.getString("idRegra", "-1")));
+            regra.setDataAlteracao(pref.getString("DataAlteracao", ""));
+            regra.setQtdDiasPorMesPodeDesafiar(Integer.valueOf(pref.getString("QtdDiasPorMesPodeDesafiar", "-1")));
+            regra.setQtdDiasPorMesRebecerDesafio(Integer.valueOf(pref.getString("QtdDiasPMesReceberDesafio", "-1")));
+            regra.setPosicaoMaximaQPodeDesafiar(Integer.valueOf(pref.getString("PosicaoMaximaQPodeDesafiar", "-1")));
+            regra.setDesafiadorQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoVitoria", "-1")));
+            regra.setDesafiadoQtdPosCasoVitoria(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoVitoria", "-1")));
+            regra.setDesafiadorQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadorQtdPosCasoDerrota", "-1")));
+            regra.setDesafiadoQtdPosCasoDerrota(Integer.valueOf(pref.getString("DesafiadoQtdPosCasoDerrota", "-1")));
+            regra.setQtdPosCaiCasoNaoDesafieMes(Integer.valueOf(pref.getString("QtdPosCaiCasoNaoDesafieMes", "-1")));
+            regra.setTempoWO(Integer.valueOf(pref.getString("TempoWO", "-1")));
+            regra.setQtdPosicoesPerdeCasoWO(Integer.valueOf(pref.getString("QtdPosicoesPerdeCasoWO", "-1")));
 
+            InsereRegraAsyncTask regraAsync = new InsereRegraAsyncTask();
+            regraAsync.setRegra(regra);
+            regraAsync.execute((Void) null);
+
+        }
     }
 
 
@@ -61,6 +66,12 @@ public class PreferencesActivity extends Activity {
         pref = PreferenceManager.getDefaultSharedPreferences(this);
 
         IP = pref.getString("ip","0");
+
+        Intent intent = getIntent();
+        idCoordenador = intent.getIntExtra("idCoordenador", 0);
+
+
+//        Log.i("IDCOORDENADORPREFERENCE",idCoordenador.toString());
 
         /*
         */

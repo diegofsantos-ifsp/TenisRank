@@ -32,8 +32,12 @@ if (isset($_POST['usuarios']))
 		
 		$sql = "update Usuario SET idUsuarios = $d[idUsuario],Nome=\"$d[Nome]\",
 		Endereco=\"$d[Endereco]\",Telefone=\"$d[Telefone]\",Email=\"$d[Email]\",NomeUsuario=\"$d[NomeUsuario]\",
-		Senha=\"$d[Senha]\",DataUltimoAcesso=\"$d[DataUltimoAcesso]\",HoraUltimoAcesso=$d[HoraUltimoAcesso],
+		Senha=\"$d[Senha]\",DataUltimoAcesso=\"$d[DataUltimoAcesso]\",HoraUltimoAcesso=\"$d[HoraUltimoAcesso]\",
 		CadastroValido=$d[CadastroValido] where idUsuarios=$d[idUsuario]";
+	}
+	else if ($tipo==3)
+	{
+		$sql = "delete from Usuario where idUsuarios=$d[idUsuario]";
 	}
 
 }
