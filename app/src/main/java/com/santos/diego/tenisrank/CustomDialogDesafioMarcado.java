@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,12 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
     private int idTenistaDesafiado;
     private int idTenistaDesafiador;
 
+
+    private int idCategoria=0;
+
+    private Integer posicaoDesafiado=0;
+    private Integer posicaoDesafiador=0;
+
     private EditText dataEdit;
     private EditText horaEdit;
     private EditText descricao;
@@ -44,14 +51,15 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
     private OnCustomDialogDesafioInteractionListener mListener;
 
 
-    public static CustomDialogDesafioMarcado newInstance(Integer param1, Integer param2, Integer param3, String param4, String param5) {
+    public static CustomDialogDesafioMarcado newInstance(Integer param1, Integer param2, Integer param3, Integer param4, Integer param5) {
         CustomDialogDesafioMarcado fragment = new CustomDialogDesafioMarcado();
         Bundle args = new Bundle();
         args.putInt("idUsuario", param1);
         args.putInt("idTenistaDesafiador", param2);
         args.putInt("idTenistaDesafiado",param3);
-        args.putString("Nome", param4);
-        args.putString("Email", param5);
+        args.putInt("posicaoTenistaDesafiado",param4);
+        args.putInt("posicaoTenistaDesafiador",param5);
+        //args.putString("Email", param5);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,10 +81,21 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
         mListener = null;
     }
 
+
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+
+
     public interface OnCustomDialogDesafioInteractionListener {
 
 
-        void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado);
+        void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado, int posDesafiado, int posDesafiador, int idCat);
     }
 
     //public void onButtonPressed(String Data, String Hora) {
@@ -91,6 +110,11 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
         if (getArguments() != null) {
             idTenistaDesafiador = getArguments().getInt("idTenistaDesafiador");
             idTenistaDesafiado = getArguments().getInt("idTenistaDesafiado");
+            posicaoDesafiado = getArguments().getInt("posicaoTenistaDesafiado");
+            posicaoDesafiador = getArguments().getInt("posicaoTenistaDesafiador");
+
+            Log.i("PosicaoDesafiado",posicaoDesafiado.toString());
+            Log.i("PosicaoDesafiador",posicaoDesafiador.toString());
             //  idTenista = getArguments().getInt("idTenista");
             // nome = getArguments().getString("Nome");
             // email = getArguments().getString("Email");
@@ -180,7 +204,7 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
                         try {
                             Date date = inputFormat.parse(dataEdit.getText().toString());
                             String result = outputFormat.format(date);
-                            mListener.onCustomDialogFragmentInteraction(result,horaEdit.getText().toString(),descricao.getText().toString(),idTenistaDesafiador,idTenistaDesafiado);
+                            mListener.onCustomDialogFragmentInteraction(result,horaEdit.getText().toString(),descricao.getText().toString(),idTenistaDesafiador,idTenistaDesafiado,posicaoDesafiado,posicaoDesafiador,idCategoria);
                         }catch (java.text.ParseException e)
                         {
 
@@ -200,6 +224,25 @@ public class CustomDialogDesafioMarcado extends DialogFragment {
 
         return rootView;
     }
+
+    public Integer getPosicaoDesafiado() {
+        return posicaoDesafiado;
+    }
+
+    public void setPosicaoDesafiado(Integer posicaoDesafiado) {
+        this.posicaoDesafiado = posicaoDesafiado;
+    }
+
+    public Integer getPosicaoDesafiador() {
+        return posicaoDesafiador;
+    }
+
+    public void setPosicaoDesafiador(Integer posicaoDesafiador) {
+        this.posicaoDesafiador = posicaoDesafiador;
+    }
+
+
+
     /*
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

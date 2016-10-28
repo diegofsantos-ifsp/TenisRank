@@ -9,7 +9,7 @@ if (isset($_GET['idCategoria']) && isset($_GET['Ultimo']))
 {
 	$idCategoria=$_GET['idCategoria'];
 //	$sql = "select * from RankingHistorico,categoria where idRankingHistorico='$idRanking'";
-	$sql = "select * from RankingHistorico,Categoria where rankinghistorico.Data=(select MAX(Data) from rankinghistorico) AND rankinghistorico.Hora=(select MAX(Hora) from rankinghistorico) AND RankingHistorico.Categoria_idCategoria=Categoria.idCategoria AND RankingHistorico.Categoria_idCategoria='$idCategoria'";
+	$sql = "select * from RankingHistorico,Categoria where rankinghistorico.Data=(select MAX(Data) from rankinghistorico)  AND RankingHistorico.Categoria_idCategoria=Categoria.idCategoria AND RankingHistorico.Categoria_idCategoria='$idCategoria' ORDER BY HORA DESC";
 }
 else if (isset($_GET['Ultimo'])) //se setado em 1 pega os dados do ranking mais recente (último registro adicionado)
 {

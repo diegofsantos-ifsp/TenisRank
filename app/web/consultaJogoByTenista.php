@@ -48,6 +48,7 @@ if (mysqli_num_rows($res) > 0)
 		$desafios["TenistaDesafiador_idTenistas"] = $row["TenistaDesafiador_idTenistas"];
 		$desafios["TenistaDesafiado"] = $row["TenistaDesafiado"];
 		$desafios["Quadra_idQuadra"] = $row["Quadra_idQuadra"];
+		$desafios["idCategoria"]=$row["Categoria_idCategoria"];
 		$desafios["Data"] = $row["Data"];
 		$desafios["Hora"] = $row["Hora"];
 		$desafios["Jogado"] = $row["Jogado"];
@@ -74,7 +75,7 @@ if (mysqli_num_rows($res) > 0)
 		$desafios["DesafiadorPontosSeGanhar"]=$row["DesafiadorPontosSeGanhar"];
 		$desafios["DesafiadorPontosSePerder"]=$row["DesafiadorPontosSePerder"];
 		$desafios["DesafiadoPontosSeGanhar"]=$row["DesafiadoPontosSeGanhar"];
-		$desafios["DesafiadoPontosSePerder"]=$row["DesafiadorPontosSePerder"];
+		$desafios["DesafiadoPontosSePerder"]=$row["DesafiadoPontosSePerder"];
 		$desafios["EstaNoRanking"]=$row["EstaNoRanking"];
 		
 		

@@ -1,5 +1,6 @@
 package com.santos.diego.tenisrank;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -34,6 +36,12 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     Regra regra=null;
 
 
+    private Integer idTenista=null;
+
+
+    private Integer idCategoria = 0;
+
+
 
     public Regra getRegra() {
         return regra;
@@ -43,6 +51,13 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
         this.regra = regra;
     }
 
+    public Integer getIdTenista() {
+        return idTenista;
+    }
+
+    public void setIdTenista(Integer idTenista) {
+        this.idTenista = idTenista;
+    }
 
 
 
@@ -51,6 +66,13 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     //private final String[] values=null;
     private LayoutInflater inflater = null;
 
+    public Integer getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Integer idCategoria) {
+        this.idCategoria = idCategoria;
+    }
 
     public CustomArrayRankingAdapter (Context context, ArrayList<Tenista> temp)
     {
@@ -117,6 +139,7 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
     public View getView (int position, View convertView, ViewGroup parent)
     {
         final Tenista item = values.get(position);
+        final Integer posicaoDesafiado = position+1;
         ViewHolderCustom viewHolder;
 
         if (convertView==null)
@@ -166,6 +189,7 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                     viewHolder.imgView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                         //   Log.i("IDCATEGORIA",idCategoria.toString());
                             AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
                             builder1.setMessage("Você já conversou com o jogador e possui uma data definida para o jogo?");
                             builder1.setCancelable(true);
@@ -175,6 +199,24 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();
+
+                                            ///////////////////////////////////////////////////////////////////////////////////
+                                           CustomDialogDesafioMarcado customDialogDesafio = CustomDialogDesafioMarcado.newInstance(item.getUsuario().getId(),idTenista,item.getIdTenista(),posicaoDesafiado,posicao);
+                                            customDialogDesafio.setIdCategoria(idCategoria);
+                                            FragmentManager fragmentManager = ((MainActivity)context).getSupportFragmentManager();
+                                            //fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
+
+
+                                            //FragmentManager fm = ((MainActivity)context).getSupportFragmentManager();
+                                            //CustomDialogDesafioMarcado dialogcustom = new CustomDialogDesafioMarcado();
+                                            customDialogDesafio.show(fragmentManager, "customdialog");
+
+
+
+
+
+
+                                            ///////////////////////////////////////////////////////////////////////////////////
                                         }
                                     });
 
@@ -205,9 +247,21 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                                 SharedPreferences.Editor editor = pref.edit();
                                 editor.putBoolean("ligou", true);
                                 editor.putString("nome_jogador_desafiado", item.getUsuario().getNome());
-                                Log.i("TENISTA", item.getIdTenista().toString());
+                               // Log.i("TENISTA", item.getIdTenista().toString());
                                 //editor.putInt("idTenistaDesafiado",item.getIdTenista());
+
                                 editor.putInt("idTenistaDesafiado", item.getIdTenista());
+
+                                //enviar as posicoes atuais do ranking de cada tenista
+                                //para que seja possível fazer o cálculo de quantas posições cada
+                                // tenista ganhará/perderá após o jogo
+                                editor.putInt("posicaoTenistaDesafiado",posicaoDesafiado);
+                                editor.putInt("posicaoTenistaDesafiador",posicao);
+                                editor.putInt("idCategoria",idCategoria);
+
+                            //    Log.i("PosicaoDesafiado",posicaoDesafiado.toString());
+                             //   Log.i("PosicaoDesafiador",posicao.toString());
+
                                 editor.commit();
 
                                 context.startActivity(intent);

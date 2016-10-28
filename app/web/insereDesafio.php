@@ -29,13 +29,13 @@ if (isset($_POST['desafio']))
 			ResultTenistaDesafiador1,ResultTenistaDesafiador2,ResultTenistaDesafiador3,WO,ConfirmadoCoordenador,ConfirmadoDesafiado,
 			ConfirmadoDesafiador,tieBreakDesafiado1,tieBreakDesafiador1,tieBreakDesafiado2,tieBreakDesafiador2,tieBreakDesafiado3,
 			tieBreakDesafiador3,Ganhador, DesafiadorPontosSeGanhar, DesafiadorPontosSePerder, DesafiadoPontosSeGanhar,
-			DesafiadoPontosSePerder, EstaNoRanking) values ($d[idTenistaDesafiador],$d[idTenistaDesafiado],$d[idQuadra],\"$d[Data]\",
+			DesafiadoPontosSePerder, EstaNoRanking, Categoria_idCategoria) values ($d[idTenistaDesafiador],$d[idTenistaDesafiado],$d[idQuadra],\"$d[Data]\",
 			\"$d[Hora]\",$d[Jogado],$d[AceitoDesafiado],$d[AceitoDesafiador],\"$d[Descricao]\",$d[ResultTenistaDesafiado1],
 			$d[ResultTenistaDesafiado2],$d[ResultTenistaDesafiado3],$d[ResultTenistaDesafiador1],$d[ResultTenistaDesafiador2],
 			$d[ResultTenistaDesafiador3],$d[WO],$d[ConfirmadoCoordenador],$d[ConfirmadoDesafiado],$d[ConfirmadoDesafiador],
 			$d[tieBreakDesafiado1],$d[tieBreakDesafiador1],$d[tieBreakDesafiado2],$d[tieBreakDesafiador2],$d[tieBreakDesafiado3],
 			$d[tieBreakDesafiador3],$d[Ganhador], $d[DesafiadorPontosSeGanhar],$d[DesafiadorPontosSePerder],$d[DesafiadoPontosSeGanhar],
-			$d[DesafiadoPontosSePerder],$d[EstaNoRanking])";
+			$d[DesafiadoPontosSePerder],$d[EstaNoRanking], $d[idCategoria])";
 	}
 	else if ($tipo==2)
 	{
@@ -52,7 +52,8 @@ if (isset($_POST['desafio']))
 		tieBreakDesafiador2=$d[tieBreakDesafiador2],tieBreakDesafiado3=$d[tieBreakDesafiado3],
 		tieBreakDesafiador3=$d[tieBreakDesafiador3],Ganhador=$d[Ganhador],DesafiadorPontosSeGanhar=$d[DesafiadorPontosSeGanhar],
 		DesafiadorPontosSePerder=$d[DesafiadorPontosSePerder], DesafiadoPontosSeGanhar=$d[DesafiadoPontosSeGanhar],
-		DesafiadoPontosSePerder=$d[DesafiadoPontosSePerder],EstaNoRanking=$d[EstaNoRanking]	where idDesafios=$d[idDesafio]";
+		DesafiadoPontosSePerder=$d[DesafiadoPontosSePerder],EstaNoRanking=$d[EstaNoRanking], 
+		Categoria_idCategoria=$d[idCategoria] where idDesafios=$d[idDesafio]";
 	}
 
 }

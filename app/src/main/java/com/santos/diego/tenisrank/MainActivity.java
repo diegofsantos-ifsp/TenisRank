@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private Integer idTenista = null;
     private Integer idCoordenador = null;
     private Integer posicaoUsuario=null;
+    private Integer idCategoria=0; //armazena o id da categoria que o usuário atual está
     private ArrayList<Categoria> categorias = null; //armazena todas as categorias existentes
     private ArrayList<String> nomesCategorias = null; //usado para armazenar os nomes das categorias no spinner
 
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity
  //   private TenistasRankingAsyncTask tenistasrankingAsync = null;
     private ArrayAdapter<String> adapter_spinner = null;
 
+    private SharedPreferences pref;
 
     private Toolbar toolbar = null;
     private Spinner spinner = null;
@@ -245,7 +247,7 @@ public class MainActivity extends AppCompatActivity
   //      SharedPreferences.Editor editor = pref.edit();
     //    editor.putBoolean("ligou",false);
       //  editor.commit();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        pref = PreferenceManager.getDefaultSharedPreferences(this);
         IP = pref.getString("ip","0");
 
 
@@ -262,6 +264,11 @@ public class MainActivity extends AppCompatActivity
         builder1.setCancelable(true);
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         final int idTenistaDesafiado = pref.getInt("idTenistaDesafiado",0);
+        final int posicaoDesafiado = pref.getInt("posicaoTenistaDesafiado",0);
+        final int posicaoDesafiador = pref.getInt("posicaoTenistaDesafiador",0);
+        idCategoria = pref.getInt("idCategoria",0);
+
+        Log.i("idCategoria",idCategoria.toString());
 
         builder1.setPositiveButton(
                 "Sim",
@@ -269,7 +276,8 @@ public class MainActivity extends AppCompatActivity
                     public void onClick(DialogInterface dialog, int id) {
 
                         if (idTenistaDesafiado>0) {
-                           CustomDialogDesafioMarcado customDialogDesafio = CustomDialogDesafioMarcado.newInstance(idUsuario,idTenista,idTenistaDesafiado,nome,email);
+                           CustomDialogDesafioMarcado customDialogDesafio = CustomDialogDesafioMarcado.newInstance(idUsuario,idTenista,idTenistaDesafiado,posicaoDesafiado,posicaoDesafiador);
+                            customDialogDesafio.setIdCategoria(idCategoria);
                             FragmentManager fragmentManager = getSupportFragmentManager();
                             //fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
 
@@ -332,6 +340,8 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean("ligou",false);
             editor.putString("nome_jogador_desafiado",null);
             editor.putString("idTenistaDesafiado",null);
+            editor.putInt("posicaoTenistaDesafiado",0);
+            editor.putInt("posicaoTenistaDesafiador",0);
             editor.commit();
 
 
@@ -404,7 +414,7 @@ public class MainActivity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_ranking) {
-            FragmentRanking fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+            FragmentRanking fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email, idCoordenador);
             FragmentManager fragmentManager = this.getSupportFragmentManager();
 
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"RankingFragment").commit();
@@ -448,12 +458,13 @@ public class MainActivity extends AppCompatActivity
 
     //Do Fragmento CustomDialogDesafioMarcado
     @Override
-    public void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado) {
+    public void onCustomDialogFragmentInteraction(String Data, String Hora, String Descricao, int idTenistaDesafiador, int idTenistaDesafiado, int posDesafiado, int posDesafiador, int idCat) {
 
         Desafio t = new Desafio();
 
         t.setIdQuadra(1);
         t.setIdTenistaDesafiado(idTenistaDesafiado);
+        t.setIdCategoria(idCat);
         t.setIdTenistaDesafiador(idTenistaDesafiador);
         t.setGanhador(0);
         t.setAceitoDesafiado(1);
@@ -466,6 +477,35 @@ public class MainActivity extends AppCompatActivity
         t.setJogado(0);
         t.setDescricao(Descricao);
 
+        //calcular o quanto cada jogador ganhará/perderá de posições após o jogo
+
+        int diferencaPosicao = posDesafiador - posDesafiado;
+
+        Integer desafiadorVitoria = Integer.valueOf(pref.getString("DesafiadorQtdPosCasoVitoria","0"));
+        Integer desafiadorDerrota = Integer.valueOf(pref.getString("DesafiadorQtdPosCasoDerrota","0"));
+        Integer desafiadoVitoria = Integer.valueOf(pref.getString("DesafiadoQtdPosCasoVitoria","0"));
+        Integer desafiadoDerrota = Integer.valueOf(pref.getString("DesafiadoQtdPosCasoDerrota","0"));
+
+        //calcular quantos pontos terá caso desafiador ganhe (de acordo com a posição do desafiado)
+        if (desafiadorVitoria==-1)
+            desafiadorVitoria = diferencaPosicao;
+
+        if (desafiadorDerrota==-1)
+            desafiadorDerrota = diferencaPosicao;
+
+        if (desafiadoVitoria==-1)
+            desafiadoVitoria = diferencaPosicao;
+
+        if (desafiadoDerrota==-1)
+            desafiadoDerrota = diferencaPosicao;
+
+
+        t.setDesafiadorPontosSeGanhar(desafiadorVitoria);
+        t.setDesafiadorPontosSePerder(desafiadorDerrota);
+        t.setDesafiadoPontosSeGanhar(desafiadoVitoria);
+        t.setDesafiadoPontosSePerder(desafiadoDerrota);
+
+
         InsertDesafioAsyncTask insDesAsyncTask = new InsertDesafioAsyncTask();
         insDesAsyncTask.execute(t);
     }
@@ -474,7 +514,7 @@ public class MainActivity extends AppCompatActivity
     public void onCustomDialogMarcarResultadoOKClicked(Desafio d) {
 
         InsertDesafioAsyncTask insertDesafioAsyncTask = new InsertDesafioAsyncTask();
-        Log.i("IDDESAFIOS",String.valueOf(d.getIdDesafio()));
+        //Log.i("IDDESAFIOS",String.valueOf(d.getIdDesafio()));
         insertDesafioAsyncTask.setInsere(false);
         insertDesafioAsyncTask.execute(d);
     }
@@ -512,7 +552,7 @@ private class InsertDesafioAsyncTask extends AsyncTask <Desafio, Integer, Boolea
 
         //atualiza o fragmento do Ranking (com os novos dados gerados)
         if (MainActivity.this.getTitle().toString().contains("Ranking")) {
-            Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+            Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email, idCoordenador);
             FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
 
             fragmentManager.beginTransaction().replace(R.id.content_frame,fragment,"RankingFragment").commit();
@@ -630,7 +670,7 @@ private class ConsultaRegrasAsyncTask extends AsyncTask<Void, Void, Boolean>
 
         progressDialog.cancel();
 
-        Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email);
+        Fragment fragment = FragmentRanking.newInstance(idUsuario,idTenista,nome,email, idCoordenador);
         FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame,fragment).commit();
 

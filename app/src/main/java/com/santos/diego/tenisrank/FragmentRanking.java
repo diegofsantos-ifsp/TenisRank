@@ -1,11 +1,13 @@
 package com.santos.diego.tenisrank;
 
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -70,6 +72,8 @@ public class FragmentRanking extends Fragment {
     private TextView textView_Hora = null;
     private String IP;
 
+    private FloatingActionButton fab = null;
+
     //armazena os dados do próximo jogo do tenista desafiado (com o desafiador), se existir
     private Tenista desafiado = null;
     private Tenista desafiador = null;
@@ -93,13 +97,14 @@ public class FragmentRanking extends Fragment {
      * @return A new instance of fragment FragmentRanking.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentRanking newInstance(Integer param1, Integer param2, String param3, String param4) {
+    public static FragmentRanking newInstance(Integer param1, Integer param2, String param3, String param4, Integer param5) {
         FragmentRanking fragment = new FragmentRanking();
         Bundle args = new Bundle();
         args.putInt("idUsuario", param1);
         args.putInt("idTenista", param2);
         args.putString("Nome", param3);
         args.putString("Email", param4);
+        args.putInt("idCoordenador",param5);
 
         fragment.setArguments(args);
         return fragment;
@@ -163,6 +168,7 @@ public class FragmentRanking extends Fragment {
         spinner = (Spinner) view.findViewById(R.id.spinner_nav);
         textView_Data = (TextView) view.findViewById(R.id.textview_data);
         textView_Hora = (TextView) view.findViewById(R.id.textview_hora);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab_ranking);
 
         pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         IP = pref.getString("ip","0");
@@ -173,7 +179,7 @@ public class FragmentRanking extends Fragment {
         idTenista = args.getInt("idTenista",0);
         nome = args.getString("Nome",null);
         email = args.getString("Email",null);
-
+        idCoordenador = args.getInt("idCoordenador",0);
 
 
 
@@ -201,6 +207,8 @@ public class FragmentRanking extends Fragment {
         spinner.setAdapter(adapter_spinner);
 
 
+        if (idCoordenador==0)
+            fab.setVisibility(View.GONE);
 
         CategoriaAsyncTask catAsync = new CategoriaAsyncTask(0);
 
@@ -217,6 +225,8 @@ public class FragmentRanking extends Fragment {
 
                 RankingAsyncTask r = new RankingAsyncTask(0, categorias.get(pos).getIdCategoria());
                 r.execute((Void) null);
+
+                adapter.setIdCategoria(categorias.get(pos).getIdCategoria());
             }
 
             @Override
@@ -246,6 +256,7 @@ public class FragmentRanking extends Fragment {
             public void onRefresh() {
                 RankingAsyncTask rasync = new RankingAsyncTask(0,categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
                 rasync.execute((Void) null);
+                adapter.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
                 refreshLayout.setRefreshing(false);
                 //  Log.i("REFRESH", "DEU CERTO");
                 /*
@@ -259,10 +270,76 @@ public class FragmentRanking extends Fragment {
 
 
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AtualizaNovoRankingAsyncTask at = new AtualizaNovoRankingAsyncTask();
+                at.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+                at.execute((Void) null);
+
+
+
+            }
+        });
+
         return view;
     }
 
 
+
+    private class AtualizaNovoRankingAsyncTask extends AsyncTask<Void, Void, Boolean>
+    {
+
+        private Integer idCategoria = 0;
+        private ProgressDialog progressDialog=null;
+
+        public Integer getIdCategoria() {
+            return idCategoria;
+        }
+
+        public void setIdCategoria(Integer idCategoria) {
+            this.idCategoria = idCategoria;
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            DatabaseJson json = new DatabaseJson();
+
+            json.setIP(IP);
+
+            if (idCategoria>0)
+            {
+                json.atualizaRanking(idCategoria);
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Aguarde...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean e) {
+            super.onPostExecute(e);
+            RankingAsyncTask rasync = new RankingAsyncTask(0,categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+            rasync.execute((Void) null);
+            adapter.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+
+            progressDialog.cancel();
+        }
+    }
 
 
     //faz a consulta na tabela de ranking e retorna o ranking atual (último registro)
@@ -278,6 +355,7 @@ public class FragmentRanking extends Fragment {
         private TextView data;
         private TextView hora;
         private LinearLayout linearLayout;
+        private ProgressDialog progressDialog=null;
 
         RankingAsyncTask (Integer t, Integer idCat)
         {
@@ -491,7 +569,10 @@ public class FragmentRanking extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("Aguarde...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
@@ -540,6 +621,7 @@ public class FragmentRanking extends Fragment {
                 textView_Hora.setText("");
 
             }
+            progressDialog.cancel();
 
         }
 
@@ -591,6 +673,7 @@ public class FragmentRanking extends Fragment {
                     if (temp.get(x).getUsuario().getEmail().compareToIgnoreCase(email) == 0) {
                         posicaoUsuario = temp.get(x).getPosicaoAtualRanking();
 
+
                         pos = x;
 
                         //                        Log.i("POSICAO", posicaoUsuario.toString());
@@ -604,11 +687,16 @@ public class FragmentRanking extends Fragment {
 
 
                 ArrayList<Desafio> tempDesafio = null;
+                ArrayList<Desafio> tempDesafio2 = null;
 
                 if (temp!=null && posicaoUsuario!=-1) {
 
                     //substituir o 3 pela quantidade de jogadores que poderão ser desafiados
-                    for (int x = pos; x >= pos - 3; x--) {
+                    Integer posicaoMaxima = pos-regra.getPosicaoMaximaQPodeDesafiar();
+
+                    if (posicaoMaxima<0)
+                        posicaoMaxima=0;
+                    for (int x = pos; x >= posicaoMaxima; x--) {
 
 
                         tempDesafio = json.getJogosByTenista(0, temp.get(x).getIdTenista(), 0);
@@ -618,8 +706,26 @@ public class FragmentRanking extends Fragment {
                         } else
                             temp.get(x).setTemJogoMarcado(false);
 
+
+
+
                         //usuario atual
                         if (x == pos) {
+
+
+                            //procura por jogos já jogados mas que não foram para o ranking ainda
+                            //caso existam, o usuário não poderá marcar novos desafios
+                            //novos desafios só poderão ser agendados caso o jogo do usuário já tenha
+                            //sido atualizado no ranking
+                            tempDesafio2 = json.getJogosByTenista(1,temp.get(x).getIdTenista(),0);
+
+                            if (tempDesafio2!=null)
+                            {
+                                if (tempDesafio2.get(0).getEstaNoRanking()==0)
+                                    temp.get(x).setTemJogoMarcado(true);
+                            }
+
+
                             adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
                             //adapter.notifyDataSetChanged();
                         }
@@ -647,9 +753,13 @@ public class FragmentRanking extends Fragment {
         protected void onPostExecute(ArrayList<Tenista> tenistasTemp) {
             super.onPostExecute(tenistasTemp);
             if (tenistasTemp!=null) {
+                if (tenistas!=null)
+                    tenistas.clear();
                 tenistas = tenistasTemp;
                 adapter.setPosicaoUsuario(posicaoUsuario);
+                adapter.setIdTenista(idTenista);
                 adapter.setItem(tenistasTemp);
+
                 adapter.notifyDataSetChanged();
 
             }

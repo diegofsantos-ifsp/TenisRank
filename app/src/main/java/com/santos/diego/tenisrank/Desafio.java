@@ -20,6 +20,8 @@ public class Desafio {
     private int DesafiadoPontosSeGanhar=0;
     private int DesafiadoPontosSePerder=0;
 
+
+    private int idCategoria=0;
     private int EstaNoRanking=0;
 
     private int ganhador=0;
@@ -81,6 +83,16 @@ public class Desafio {
     public void setDesafiadoPontosSePerder(int desafiadoPontosSePerder) {
         DesafiadoPontosSePerder = desafiadoPontosSePerder;
     }
+
+
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
 
     public int getEstaNoRanking() {
         return EstaNoRanking;
@@ -336,6 +348,7 @@ public class Desafio {
             json.put("idTenistaDesafiado",this.getIdTenistaDesafiado());
             json.put("idTenistaDesafiador",this.getIdTenistaDesafiador());
             json.put("idQuadra",this.getIdQuadra());
+            json.put("idCategoria",this.getIdCategoria());
             json.put("Ganhador",this.getGanhador());
             json.put("Data",this.getData());
             json.put("Hora",this.getHora());

@@ -50,6 +50,13 @@ if ($res)
 {
 	//retorna o ID do campo inserido
 	$result["result"]=mysqli_insert_id($conn);
+	
+	if ($tipo==2 && $d["CadastroValido"]==0)
+	{
+		$sql = "update Tenista SET EstaNoRanking=0 where Usuarios_idUsuarios=$d[idUsuario]";
+		$res = mysqli_query($conn,$sql) or die ("Erro na consulta" .mysqli_error($conn));
+	}
+		
 				
 }
 else

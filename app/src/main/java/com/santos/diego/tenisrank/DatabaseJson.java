@@ -69,6 +69,45 @@ public class DatabaseJson {
 
 
 
+
+    //retorna as regras
+    public Integer atualizaRanking(Integer id)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+
+        params.put("idCat",id.toString());
+        JSONArray atualiza = null;
+
+        //   Log.v("JSON","ANTES");
+        try {
+
+            //params.put("Email","diegofsantos@gmail.com");
+
+            String http = "http://"+IP+"/tenis/atualizaRanking.php";
+            //Log.i("HTTP",http);
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
+            if (json != null) {
+                if (json.getInt("result") == 1) {
+                    result = json.getInt("result");
+
+                    return 1;
+                }
+            }
+            else {
+                setError(1);
+                return error;
+
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); setError(2);}
+
+
+        // Log.v("JSON", json.toString());
+        return 1;
+    }
+
+
+
     //retorna as regras
     public ArrayList<Regra> getRegras()
     {
@@ -643,6 +682,7 @@ public class DatabaseJson {
                     des.setIdTenistaDesafiador(u.getInt("TenistaDesafiador_idTenistas"));
         //            Log.i("DESAFIADOR",des.getIdTenistaDesafiador().toString());
                     des.setIdTenistaDesafiado(u.getInt("TenistaDesafiado"));
+                    des.setIdCategoria(u.getInt("idCategoria"));
       //              Log.i("DESAFIADO",des.getIdTenistaDesafiado().toString());
                     des.setIdQuadra(u.getInt("Quadra_idQuadra"));
                     des.setData(u.getString("Data"));
@@ -667,6 +707,11 @@ public class DatabaseJson {
                     des.setTieBreakDesafiador2((short) u.getInt("tieBreakDesafiador2"));
                     des.setTieBreakDesafiador3((short) u.getInt("tieBreakDesafiador3"));
                     des.setGanhador(u.getInt("Ganhador"));
+                    des.setEstaNoRanking(u.getInt("EstaNoRanking"));
+                    des.setDesafiadoPontosSeGanhar(u.getInt("DesafiadoPontosSeGanhar"));
+                    des.setDesafiadoPontosSePerder(u.getInt("DesafiadoPontosSePerder"));
+                    des.setDesafiadorPontosSeGanhar(u.getInt("DesafiadorPontosSeGanhar"));
+                    des.setDesafiadorPontosSePerder(u.getInt("DesafiadorPontosSePerder"));
 
                     if (tenistaDesc==1) {
 
@@ -940,18 +985,18 @@ public class DatabaseJson {
 
         params.put("idRanking", Integer.toString(id));
         Usuario user = null;
-
+        Log.i("RANKINGID",Integer.toString(id));
 
         try {
 //            Log.i("RANKING","ANTES JPARSER");
 
             String http = "http://"+IP+"/tenis/consultaTenistasByRanking.php";
             JSONObject json = jparser.makeHttpRequest(http, "GET", params);
-  //          Log.i("RANKING","DEPOIS JPARSER");
+            Log.i("RANKING","DEPOIS JPARSER");
             if (json == null)
                 return null;
 
-            //Log.i("RANKING","DEPOIS JPARSER NULL");
+            Log.i("RANKING","DEPOIS JPARSER NULL");
 
             if (json.getInt("result")==1) {
                 tenistasJson = json.getJSONArray("tenistas");
@@ -1018,6 +1063,8 @@ public class DatabaseJson {
                     temp.setHora(u.getString("Hora"));
                     temp.setIdCategoria(u.getInt("Categoria_idCategoria"));
                     temp.setNomeCategoria(u.getString("Nome_Categoria"));
+
+
 
                     rankingArray.add(temp);
                 }
