@@ -252,7 +252,28 @@ class AtualizarRanking
 		return $i;
 	}
 	
+public function getAllCats()
+{
 	
+	$result = array();
+	$i=0;
+	$sql = "select * from categoria";
+	$res = mysqli_query($this->conn,$sql) or die ("Erro na consulta" .mysqli_error($this->conn));
+	if (mysqli_num_rows($res) > 0)
+	{
+	
+		while ($row = mysqli_fetch_array($res))
+		{
+			$result[$i]=$row;
+			$i++;
+		}
+	}
+	
+	
+	return $result;
+	
+		
+}
 	
 	public function atualizaRankingComDesafios($idCat)
 	{
@@ -615,24 +636,34 @@ class AtualizarRanking
 
 
 
-$rank = new AtualizarRanking;
+
 
 //$res = array();
 
 //$rank->conecta();
 
+
 if (isset($_POST["idCat"]))
 {
+	$rank = new AtualizarRanking;
 	$idCat = $_POST["idCat"];
 	$rank->atualizaRankingComDesafios($idCat);
 }
 
 else //atualiza o ranking de todas as categorias 
 {
+	$rank2 = new AtualizarRanking;
+	$cats = $rank2->getAllCats();
 	
+	if (!empty($cats))
+	foreach ($cats as $cat)
+	{
+		echo "Categorias: $cat[idCategoria]";
+		$idCategoria = $cat["idCategoria"];
+		$rank2->atualizaRankingComDesafios($idCategoria);
+		//unset($rank2);
+	}
 }
-
-
 
 $result = 1;
 

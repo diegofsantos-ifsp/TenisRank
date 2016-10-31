@@ -14,11 +14,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -211,6 +215,8 @@ public class FragmentRanking extends Fragment {
         if (idCoordenador==0)
             fab.setVisibility(View.GONE);
 
+
+
         CategoriaAsyncTask catAsync = new CategoriaAsyncTask(0);
 
         catAsync.execute((Void) null);
@@ -239,6 +245,10 @@ public class FragmentRanking extends Fragment {
 
 
         lv = (ListView) view.findViewById(R.id.listView_Ranking);
+
+        if (idCoordenador>0)
+            registerForContextMenu(lv);
+
 
         final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
 
@@ -289,12 +299,125 @@ public class FragmentRanking extends Fragment {
     }
 
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.listView_Ranking) {
+            //AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            //menu.setHeaderTitle(Countries[info.position]);
+            //String[] menuItems = getResources().getStringArray(R.arr);
+            //for (int i = 0; i<menuItems.length; i++) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.menu_listview_ranking, menu);
+        }
+    }
+
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int menuItemIndex = item.getItemId();
+        //String[] menuItems = getResources().getStringArray(R.menu.menu_listview_categorias);
+        //String menuItemName = menuItems[menuItemIndex];
+        //String listItemName = Countries[info.position];
+
+        // text.setText(String.format("Selected %s for item %s", menuItemName, listItemName));
+        switch(item.getItemId()) {
+            case R.id.menu_ranking_modificar:
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                builder1.setTitle("Alteração da posição do jogador");
+                builder1.setMessage("Insira a nova posição: \n\n");
+                builder1.setCancelable(true);
+                final EditText input = new EditText(getActivity());
+                input.setText("1");
+                input.setSelection(input.getText().length());
+                builder1.setView(input);
+
+                builder1.setPositiveButton(
+                        "Alterar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+
+                                AtualizaNovoRankingAsyncTask atualiza = new AtualizaNovoRankingAsyncTask();
+
+                                atualiza.setMudaPosicao(true);
+                                atualiza.setIdCategoria(categorias.get(spinner.getSelectedItemPosition()).getIdCategoria());
+                                atualiza.setIdRanking(ranking.get(0).getIdRanking());
+                                atualiza.setIdTenista(tenistas.get(info.position).getIdTenista());
+                                atualiza.setNovaPos(Integer.valueOf(input.getText().toString()));
+
+                                atualiza.execute((Void) null);
+                                //CategoriaAsyncTask catAsync = new CategoriaAsyncTask();
+                                //catAsync.execute((Void) null);
+
+
+                            }
+                        });
+
+                builder1.setNegativeButton(
+                        "Cancelar",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alert11 = builder1.create();
+                alert11.show();
+
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+
+    }
 
     private class AtualizaNovoRankingAsyncTask extends AsyncTask<Void, Void, Boolean>
     {
 
         private Integer idCategoria = 0;
         private ProgressDialog progressDialog=null;
+
+        private Integer novaPos=-1;
+        private Integer idTenista=0;
+
+        public Integer getIdRanking() {
+            return idRanking;
+        }
+
+        public void setIdRanking(Integer idRanking) {
+            this.idRanking = idRanking;
+        }
+
+        public Integer getNovaPos() {
+            return novaPos;
+        }
+
+        public void setNovaPos(Integer novaPos) {
+            this.novaPos = novaPos;
+        }
+
+        public Integer getIdTenista() {
+            return idTenista;
+        }
+
+        public void setIdTenista(Integer idTenista) {
+            this.idTenista = idTenista;
+        }
+
+        private Integer idRanking = 0;
+
+
+        public Boolean getMudaPosicao() {
+            return mudaPosicao;
+        }
+
+        public void setMudaPosicao(Boolean mudaPosicao) {
+            this.mudaPosicao = mudaPosicao;
+        }
+
+        private Boolean mudaPosicao = false;
 
         public Integer getIdCategoria() {
             return idCategoria;
@@ -311,12 +434,17 @@ public class FragmentRanking extends Fragment {
 
             json.setIP(IP);
 
-            if (idCategoria>0)
-            {
-                json.atualizaRanking(idCategoria);
-                return true;
-            }
 
+            if (mudaPosicao)
+            {
+              json.modificaPosicaoJogador(this.idTenista,this.idRanking,this.idCategoria,this.novaPos);
+            }
+            else {
+                if (idCategoria > 0) {
+                    json.atualizaRanking(idCategoria);
+                    return true;
+                }
+            }
             return false;
         }
 

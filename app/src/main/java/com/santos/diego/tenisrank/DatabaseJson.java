@@ -114,6 +114,51 @@ public class DatabaseJson {
         return -1;
     }
 
+    //retorna as regras
+    public Integer modificaPosicaoJogador(Integer idTenista, Integer idRanking, Integer idCategoria, Integer novaPos)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+
+
+        params.put("idTenistas",idTenista.toString());
+        params.put("idRanking",idRanking.toString());
+        params.put("idCategoria",idCategoria.toString());
+        params.put("novaPos",novaPos.toString());
+
+
+        JSONArray atualiza = null;
+
+        //   Log.v("JSON","ANTES");
+        try {
+
+            //params.put("Email","diegofsantos@gmail.com");
+
+            String http = "http://"+IP+"/tenis/mudaPosicaoTenistaNoRanking.php";
+            //Log.i("HTTP",http);
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
+            if (json != null) {
+                if (json.getInt("result") == 1) {
+                    result = json.getInt("result");
+
+                    return 1;
+                }
+            }
+            else {
+                setError(1);
+                return error;
+
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); setError(2);}
+
+
+        // Log.v("JSON", json.toString());
+        return 1;
+    }
+
+
+
+
 
     //retorna as regras
     public Integer atualizaRanking(Integer id)
