@@ -52,6 +52,7 @@ public class FragmentRanking extends Fragment {
     private Integer idUsuario = null;
     private Integer idTenista = null;
     private Integer idCoordenador = null;
+    private Integer idCategoria = null;
 
 
     private Integer posicaoUsuario=-1;
@@ -226,7 +227,8 @@ public class FragmentRanking extends Fragment {
                 RankingAsyncTask r = new RankingAsyncTask(0, categorias.get(pos).getIdCategoria());
                 r.execute((Void) null);
 
-                adapter.setIdCategoria(categorias.get(pos).getIdCategoria());
+                idCategoria = categorias.get(pos).getIdCategoria();
+                adapter.setIdCategoria(idCategoria);
             }
 
             @Override
@@ -638,6 +640,7 @@ public class FragmentRanking extends Fragment {
         //private ArrayList<Desafio> tempDesafio = null;
         // private DatabaseJson json = null;
         private RankingHistorico rank_temp;
+        private Boolean podeMarcarJogo=false;
 
         TenistasRankingAsyncTask (RankingHistorico historico)
         {
@@ -707,28 +710,55 @@ public class FragmentRanking extends Fragment {
                             temp.get(x).setTemJogoMarcado(false);
 
 
+                        if (x!=pos) {
+                            Integer qtdDesafiosRec = json.getQtdDesafios(2, temp.get(x).getIdTenista(), idCategoria);
+
+                            if (qtdDesafiosRec!=null)
+
+                                if (qtdDesafiosRec >= regra.getQtdDiasPorMesRebecerDesafio())
+                                    temp.get(x).setTemJogoMarcado(true);
+
+
+                        }
+                        //procura por jogos já jogados mas que não foram para o ranking ainda
+                        //caso existam, o usuário não poderá marcar novos desafios e nem receber
+                        //novos desafios só poderão ser agendados caso o jogo do usuário já tenha
+                        //sido atualizado no ranking
+                        tempDesafio2 = json.getJogosByTenista(1,temp.get(x).getIdTenista(),0);
+
+                        if (tempDesafio2!=null)
+                        {
+                            if (tempDesafio2.get(0).getEstaNoRanking()==0)
+                                temp.get(x).setTemJogoMarcado(true);
+                        }
+
+
+                       // adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
 
 
                         //usuario atual
                         if (x == pos) {
 
 
-                            //procura por jogos já jogados mas que não foram para o ranking ainda
-                            //caso existam, o usuário não poderá marcar novos desafios
-                            //novos desafios só poderão ser agendados caso o jogo do usuário já tenha
-                            //sido atualizado no ranking
-                            tempDesafio2 = json.getJogosByTenista(1,temp.get(x).getIdTenista(),0);
 
-                            if (tempDesafio2!=null)
-                            {
-                                if (tempDesafio2.get(0).getEstaNoRanking()==0)
+                            Integer qtdDesafios = json.getQtdDesafios(1,temp.get(x).getIdTenista(),idCategoria);
+
+                            if (qtdDesafios!=null)
+                                if (qtdDesafios>=regra.getQtdDiasPorMesPodeDesafiar())
                                     temp.get(x).setTemJogoMarcado(true);
-                            }
 
 
-                            adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
+
+                            podeMarcarJogo=!temp.get(x).getTemJogoMarcado();
+                            //adapter.setUsuario_pode_marcar_jogo(!temp.get(x).getTemJogoMarcado());
                             //adapter.notifyDataSetChanged();
                         }
+
+                        //verifica se os jogadores já jogaram todos os jogos possíveis de acordo com
+                        //as regras: Exemplo: Um jogador não poderá desafiar mais do que 4 jogadores
+                        //e não poderá receber mais do que 4 desafios em um mês
+
+
                     }
                 }
             }
@@ -758,6 +788,7 @@ public class FragmentRanking extends Fragment {
                 tenistas = tenistasTemp;
                 adapter.setPosicaoUsuario(posicaoUsuario);
                 adapter.setIdTenista(idTenista);
+                adapter.setUsuario_pode_marcar_jogo(podeMarcarJogo);
                 adapter.setItem(tenistasTemp);
 
                 adapter.notifyDataSetChanged();

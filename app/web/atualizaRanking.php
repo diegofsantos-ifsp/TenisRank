@@ -411,12 +411,12 @@ class AtualizarRanking
 			if (mysqli_num_rows($res) > 0)
 			{
 			
-				$i=0;
-				while ($row = mysqli_fetch_array($res))
-				{
-					$contagemRanking=$row;
-					$i++;
-				}
+				//$i=0;
+				$row = mysqli_fetch_array($res);
+				
+				$contagemRanking=$row["COUNT(*)"];
+				//	$i++;
+				
 			}
 	
 			
@@ -456,12 +456,12 @@ class AtualizarRanking
 						if (mysqli_num_rows($res) > 0)
 						{
 								
-							$i=0;
-							while ($row = mysqli_fetch_array($res))
-							{
-								$contagemJogosTenista=$row;
-								$i++;
-							}
+							//$i=0;
+							$row = mysqli_fetch_array($res);
+							
+								$contagemJogosTenista=$row["COUNT(*)"];
+								//$i++;
+							
 						}
 						
 						//tenista não jogou... atualizar o ranking com a perda dos pontos

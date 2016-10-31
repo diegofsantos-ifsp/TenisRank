@@ -54,4 +54,26 @@
         android:src="@drawable/phone_call_32" />
 
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton_email"
+        android:background="#0000"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/email_32" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton_whatsapp"
+        android:background="#0000"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/whatsapp_32" />
+
 </LinearLayout>

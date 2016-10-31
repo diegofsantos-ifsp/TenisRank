@@ -68,6 +68,51 @@ public class DatabaseJson {
     }
 
 
+    //retorna a quantidade de desafios por tenista (FEITOS OU RECEBIDOS)
+    //se Type=1 feitos
+    //se Type=2 recebidos
+    public Integer getQtdDesafios (Integer type, Integer idTenista, Integer idCategoria)
+    {
+        HashMap<String,String> params = new HashMap<String,String>();
+
+        params.put("idTenistas",idTenista.toString());
+        params.put("idCategoria",idCategoria.toString());
+
+        JSONArray desafios = null;
+
+        //   Log.v("JSON","ANTES");
+        try {
+
+            //params.put("Email","diegofsantos@gmail.com");
+            String http = new String();
+            if (type==1)
+                http = "http://"+IP+"/tenis/consultaNumeroDesafiosByTenista.php";
+            else
+                http = "http://"+IP+"/tenis/consultaNumeroDesafiosRecByTenista.php";
+
+
+            JSONObject json = jparser.makeHttpRequest(http, "POST", params);
+
+
+            if (json != null) {
+
+                    return json.getInt("result");
+
+
+
+            }
+            else {
+                setError(1);
+                return error;
+
+            }
+
+        }catch (JSONException e) {e.printStackTrace(); setError(2);}
+
+
+        // Log.v("JSON", json.toString());
+        return -1;
+    }
 
 
     //retorna as regras

@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -38,6 +42,7 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
 
     private Integer idTenista=null;
 
+    private Boolean isWhatsappInstalled=false;
 
     private Integer idCategoria = 0;
 
@@ -80,6 +85,19 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
         this.context = context;
         values = temp;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        PackageManager pm = ((MainActivity)context).getPackageManager();
+
+        try{
+            pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+
+            isWhatsappInstalled=true;
+        }
+        catch (PackageManager.NameNotFoundException ex)
+        {
+            isWhatsappInstalled=false;
+        }
+
     }
 
 
@@ -150,6 +168,10 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
             viewHolder.Nome = (TextView) convertView.findViewById(R.id.textView_ranking_item_nome);
             viewHolder.imgView = (ImageButton) convertView.findViewById(R.id.imageButton);
             viewHolder.imgButton2 = (ImageButton) convertView.findViewById(R.id.imageButton2);
+            viewHolder.imgEmail = (ImageButton) convertView.findViewById(R.id.imageButton_email);
+            viewHolder.imgWhatsapp = (ImageButton) convertView.findViewById(R.id.imageButton_whatsapp);
+
+
             convertView.setTag(viewHolder);
         }
         else
@@ -170,6 +192,8 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
 
             viewHolder.imgView.setVisibility(View.GONE);
             viewHolder.imgButton2.setVisibility(View.GONE);
+            viewHolder.imgEmail.setVisibility(View.GONE);
+            viewHolder.imgWhatsapp.setVisibility(View.GONE);
 
             if (posicao!=null) {
 
@@ -273,6 +297,61 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
                             }
                         }
                     });
+
+
+                    viewHolder.imgEmail.setVisibility(View.VISIBLE);
+                    viewHolder.imgEmail.setFocusable(false);
+                    viewHolder.imgEmail.setFocusableInTouchMode(false);
+
+                    viewHolder.imgEmail.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            Intent intent = new Intent (Intent.ACTION_SENDTO);
+                            intent.setType("message/rfc822");
+                            intent.setData(Uri.parse("mailto:"+item.getUsuario().getEmail()));
+                            //intent.putExtra(Intent.EXTRA_EMAIL  , new String[]{item.getUsuario().getEmail()});
+                            intent.putExtra(Intent.EXTRA_SUBJECT, "TenisRank - Desafio");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            String str;
+                            str = "Gostaria de convidá-lo para um desafio de tênis.\n" +
+                                    "Posso jogar nos seguintes dias e horários: \n"+
+                                    nome+"\n";
+                            intent.putExtra(Intent.EXTRA_TEXT   , str);
+                            try {
+                                ((MainActivity)context).startActivity(Intent.createChooser(intent, "Enviar email..."));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(((MainActivity)context), "Não existem clientes de email instalados !", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                    });
+
+                    if (isWhatsappInstalled) {
+
+
+                        viewHolder.imgWhatsapp.setVisibility(View.VISIBLE);
+                        viewHolder.imgWhatsapp.setFocusable(false);
+                        viewHolder.imgWhatsapp.setFocusableInTouchMode(false);
+
+                        viewHolder.imgWhatsapp.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                Uri uri = Uri.parse("smsto:" + item.getUsuario().getTelefone());
+                                Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+                                i.setPackage("com.whatsapp");
+                                i.setType("text/plain");
+                                i.putExtra("sms_body", "Gostaria de convidá-lo para um desafio de tênis. Os dias e horário que eu posso são:\n");
+                                try {
+                                    ((MainActivity) context).startActivity(Intent.createChooser(i, ""));
+                                } catch (android.content.ActivityNotFoundException ex) {
+                                    Toast.makeText(((MainActivity) context), "O aplicativo Whatsapp não está instalado !", Toast.LENGTH_LONG).show();
+                                }
+
+                            }
+                        });
+                    }
                 }
             }
             }
@@ -294,6 +373,8 @@ public class CustomArrayRankingAdapter extends ArrayAdapter<Tenista>
         TextView Nome;
         ImageButton imgView;
         ImageButton imgButton2;
+        ImageButton imgEmail;
+        ImageButton imgWhatsapp;
     }
 
 }
